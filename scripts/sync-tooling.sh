@@ -16,10 +16,9 @@ dry=0
 if [[ "${1:-}" == "--dry-run" ]]; then dry=1; shift; fi
 
 [[ "$(git -C "$ROOT" symbolic-ref --quiet --short HEAD)" == main ]] || gq_die "execute a partir da branch main"
-[[ -z "$(git -C "$ROOT" status --porcelain -- $(grep -v '^#' "$ROOT/config/shared-files.txt"))" ]] \
-  || gq_die "há alterações não commitadas nas ferramentas compartilhadas; faça commit no main antes"
-
 mapfile -t shared < <(grep -Ev '^\s*(#|$)' "$ROOT/config/shared-files.txt")
+[[ -z "$(git -C "$ROOT" status --porcelain -- "${shared[@]}")" ]] \
+  || gq_die "há alterações não commitadas nas ferramentas compartilhadas; faça commit no main antes"
 if (($#)); then
   branches=("$@")
 else
