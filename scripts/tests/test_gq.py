@@ -111,6 +111,16 @@ class CatalogTest(unittest.TestCase):
         self.assertTrue(any("desconhecido" in e for e in errors))
 
 
+class CliOutputTest(unittest.TestCase):
+    def test_output_uses_lf_on_every_platform(self):
+        # Bash reads this output with mapfile; a trailing \r breaks path matching on Windows.
+        catalog = os.path.join(os.path.dirname(__file__), "..", "..", "config", "challenge-catalog.yaml")
+        script = os.path.join(os.path.dirname(__file__), "..", "lib", "gq.py")
+        out = subprocess.run([sys.executable, script, "catalog", catalog], capture_output=True, check=True).stdout
+        self.assertNotIn(b"\r", out)
+        self.assertIn("não".encode("utf-8"), out)
+
+
 class TreeTest(unittest.TestCase):
     def setUp(self):
         self.dir = tempfile.mkdtemp()
