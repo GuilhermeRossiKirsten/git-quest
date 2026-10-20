@@ -1,0 +1,41 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-1
+title: "O vazamento silencioso"
+summary: "C++11: RAII, std::unique_ptr e a regra dos três/cinco num gerenciador de sessões legado que vaza memória e corrompe o heap."
+track: cpp
+language: cpp
+standard: cpp11
+toolchain: "gcc:14.2.0"
+difficulty: beginner
+
+learning_objectives:
+  - "Diagnosticar vazamentos, double free e uso após liberação com AddressSanitizer e LeakSanitizer"
+  - "Aplicar RAII para que recursos sejam liberados em toda saída, inclusive por exceção"
+  - "Expressar posse exclusiva com std::unique_ptr em C++11, sem std::make_unique"
+  - "Aplicar a regra dos três/cinco/zero: proibir ou implementar cópia e habilitar movimento"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src/session.h
+  - src/session.cpp
+  - src/session_manager.h
+  - src/session_manager.cpp
+
+estimated_minutes: 45
+points: 100
+tags: [cpp11, raii, unique_ptr, rule-of-five, memory-leak, sanitizers]
+prerequisites: []
+next: [desafio-2, desafio-3]
+achievements: ["Caçador de vazamentos"]
+# Gerado com: python3 scripts/lib/gq.py checksum .   (identifica o código inicial intocado)
+starter_checksum: "sha256:8ef7526aa567fe31727be4718f6d437e970c20bac6955521228504bab034ef82"
