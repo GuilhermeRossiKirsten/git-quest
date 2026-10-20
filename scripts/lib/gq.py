@@ -520,7 +520,8 @@ def _print_value(val):
 def main(argv):
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
-            stream.reconfigure(encoding="utf-8")
+            # LF even on Windows: Bash callers read this output with mapfile/read.
+            stream.reconfigure(encoding="utf-8", newline="\n")
     if not argv:
         print("uso: gq.py <validate|validate-catalog|get|catalog|checksum> ...", file=sys.stderr)
         return 2
