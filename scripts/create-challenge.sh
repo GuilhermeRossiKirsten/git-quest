@@ -93,6 +93,7 @@ fi
 gq_info "Criando worktree $dir com a branch órfã $id"
 git -C "$ROOT" worktree add --quiet --detach "$dir" HEAD
 git -C "$dir" switch --quiet --orphan "$id"
+dir=$(cd "$dir" && pwd)
 
 cp -R "$ROOT/templates/challenge/." "$dir/"
 std_line="" tool_line=""

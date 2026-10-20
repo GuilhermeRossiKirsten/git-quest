@@ -105,18 +105,21 @@ gq_docker_ensure_image() {
 
 # gq_docker_run <image> <timeout-seconds> <command...>
 # Runs the command in a throwaway container with the current directory mounted
-# at /work, no network, and CPU/memory/PID limits. The timeout is enforced
-# inside the container so it works the same on Linux, macOS and Windows.
+# at /work, as a non-root user, without network and with CPU/memory/PID limits.
+# The timeout is enforced inside the container so it behaves the same on Linux,
+# macOS and Windows. Extra `docker run` flags (e.g. a cache volume) can be
+# passed through the GQ_DOCKER_EXTRA array.
 gq_docker_run() {
   local image=$1 timeout=$2
   shift 2
-  local -a user=()
+  local user=1000:1000
   if [[ "$(gq_os)" == linux || "$(gq_os)" == wsl ]]; then
-    user=(--user "$(id -u):$(id -g)")
+    user="$(id -u):$(id -g)"   # files written to /work stay owned by you
   fi
-  local -a tty=()
+  local -a tty=() extra=()
   [[ -t 1 ]] && tty=(-t)
-  MSYS_NO_PATHCONV=1 docker run --rm "${tty[@]}" "${user[@]}" \
+  if declare -p GQ_DOCKER_EXTRA >/dev/null 2>&1; then extra=("${GQ_DOCKER_EXTRA[@]}"); fi
+  MSYS_NO_PATHCONV=1 docker run --rm "${tty[@]}" --user "$user" "${extra[@]}" \
     --network "${GQ_DOCKER_NETWORK:-none}" \
     --cpus "${GQ_CPUS:-2}" --memory "${GQ_MEMORY:-2g}" --pids-limit 512 \
     --cap-add SYS_PTRACE \
