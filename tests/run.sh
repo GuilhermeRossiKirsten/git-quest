@@ -2,7 +2,7 @@
 # Avaliador do desafio-4. Roda dentro do container (via `make test`) ou
 # localmente com GITQUEST_LOCAL=1. Cada critério é reportado com ✔/✘.
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 
 CXX=${CXX:-g++}
 COMPILE=("$CXX" -std=c++20 -pedantic-errors -Isrc -Itests)
