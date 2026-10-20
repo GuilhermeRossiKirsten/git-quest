@@ -1,0 +1,11 @@
+# Files owned by main and copied verbatim into every challenge branch by
+# scripts/sync-tooling.sh. Edit them on main only; CI on challenge branches
+# fails when a copy drifts from main.
+.editorconfig
+.gitattributes
+.github/workflows/validate-challenge.yml
+scripts/gitquest
+scripts/lib/common.sh
+scripts/lib/gq.py
+scripts/validate-branch.sh
+scripts/check-environment.sh

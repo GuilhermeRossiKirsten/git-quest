@@ -1,0 +1,40 @@
+# Valida a branch main: catálogo, ferramentas compartilhadas, template e
+# consistência entre catálogo e branches desafio-*.
+name: validate-repository
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  repository:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # precisa das refs desafio-* para --check
+
+      - name: Busca as branches de desafio
+        run: git fetch --no-tags origin '+refs/heads/desafio-*:refs/remotes/origin/desafio-*'
+
+      - name: Testes do validador
+        run: python3 -m unittest discover -s scripts/tests -v
+
+      - name: ShellCheck
+        run: |
+          sudo apt-get install -y --no-install-recommends shellcheck >/dev/null
+          shellcheck -x scripts/gitquest scripts/*.sh scripts/lib/common.sh templates/challenge/*.sh
+
+      - name: Catálogo coerente com as branches
+        run: ./scripts/list-challenges.sh --check
+
+      - name: CLI responde
+        run: |
+          ./scripts/gitquest help
+          ./scripts/gitquest info desafio-1

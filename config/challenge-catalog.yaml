@@ -1,0 +1,214 @@
+# Catálogo de desafios do GitQuest.
+#
+# Fonte da verdade da LISTA de desafios. Os detalhes (objetivos, ambiente,
+# arquivos editáveis) ficam no challenge.yaml de cada branch desafio-N.
+# Formato: subconjunto de YAML descrito em docs/challenge-format.md.
+#
+# status: available -> a branch existe e passa na CI
+#         planned   -> reservado no roteiro, ainda sem branch
+
+challenges:
+  # --- Trilha C++ ------------------------------------------------------------
+  - id: desafio-1
+    title: "O vazamento silencioso"
+    track: cpp
+    difficulty: beginner
+    points: 100
+    estimated_minutes: 45
+    status: available
+    prerequisites: []
+    summary: "C++11: RAII, std::unique_ptr e a regra dos três/cinco num gerenciador de sessões legado que vaza memória."
+
+  - id: desafio-2
+    title: "Lambdas sem fronteiras"
+    track: cpp
+    difficulty: intermediate
+    points: 150
+    estimated_minutes: 45
+    status: available
+    prerequisites: [desafio-1]
+    summary: "C++14: generic lambdas, init capture, dedução de tipo de retorno e std::make_unique numa biblioteca de utilitários funcionais."
+
+  - id: desafio-3
+    title: "O valor que não estava lá"
+    track: cpp
+    difficulty: intermediate
+    points: 150
+    estimated_minutes: 50
+    status: available
+    prerequisites: [desafio-1]
+    summary: "C++17: std::optional, std::string_view e std::variant substituindo valores sentinela e ponteiros pendurados num parser de configuração."
+
+  - id: desafio-4
+    title: "Contratos de template"
+    track: cpp
+    difficulty: intermediate
+    points: 200
+    estimated_minutes: 60
+    status: available
+    prerequisites: [desafio-2]
+    summary: "C++20: concepts e constraints para que templates rejeitem tipos inválidos com erros claros em vez de comportamento errado."
+
+  - id: desafio-5
+    title: "Erros que não se escondem"
+    track: cpp
+    difficulty: advanced
+    points: 250
+    estimated_minutes: 75
+    status: available
+    prerequisites: [desafio-3, desafio-4]
+    summary: "C++23: std::expected e adaptadores de ranges para um analisador de logs que trata erros explicitamente."
+
+  # --- Trilha Estruturas de Dados --------------------------------------------
+  - id: desafio-6
+    title: "A tabela que esquecia"
+    track: dsa
+    difficulty: intermediate
+    points: 200
+    estimated_minutes: 75
+    status: available
+    prerequisites: []
+    summary: "Hash table com endereçamento aberto: tombstones, rehash e fator de carga, validada contra std::unordered_map e por desempenho."
+
+  # --- Trilha Go -------------------------------------------------------------
+  - id: desafio-7
+    title: "O pool que transbordou"
+    track: go
+    difficulty: intermediate
+    points: 200
+    estimated_minutes: 60
+    status: available
+    prerequisites: []
+    summary: "Go: worker pool com concorrência limitada, ordem preservada, sem data races (go test -race) e sem vazamento de goroutines."
+
+  - id: desafio-8
+    title: "A requisição que não sabia parar"
+    track: go
+    difficulty: intermediate
+    points: 200
+    estimated_minutes: 60
+    status: available
+    prerequisites: [desafio-7]
+    summary: "Go: context cancellation, deadlines e retry com backoff num cliente HTTP que hoje ignora cancelamentos."
+
+  # --- Trilha Docker e Kubernetes --------------------------------------------
+  - id: desafio-9
+    title: "A imagem de um gigabyte"
+    track: docker
+    difficulty: intermediate
+    points: 200
+    estimated_minutes: 60
+    status: available
+    prerequisites: []
+    summary: "Docker: multi-stage build, usuário não-root, health check e nenhum segredo dentro da imagem."
+
+  - id: desafio-10
+    title: "O Deployment que nunca ficou pronto"
+    track: kubernetes
+    difficulty: advanced
+    points: 300
+    estimated_minutes: 90
+    status: available
+    prerequisites: [desafio-9]
+    summary: "Kubernetes (Kind): diagnosticar e corrigir um Deployment com falhas de imagem, configuração, probes, recursos e Service."
+
+  # --- Roteiro (planejados) --------------------------------------------------
+  - id: desafio-11
+    title: "Move semantics sem cópias escondidas"
+    track: cpp
+    difficulty: intermediate
+    points: 150
+    estimated_minutes: 45
+    status: planned
+    prerequisites: [desafio-1]
+    summary: "C++11: rvalue references, std::move e contagem de cópias num buffer de mensagens."
+
+  - id: desafio-12
+    title: "Corrotinas que geram"
+    track: cpp
+    difficulty: advanced
+    points: 300
+    estimated_minutes: 90
+    status: planned
+    prerequisites: [desafio-4]
+    summary: "C++20/23: coroutines e std::generator num leitor de arquivos preguiçoso."
+
+  - id: desafio-13
+    title: "jthread e stop tokens"
+    track: cpp
+    difficulty: advanced
+    points: 250
+    estimated_minutes: 60
+    status: planned
+    prerequisites: [desafio-4]
+    summary: "C++20: std::jthread e std::stop_token para encerramento cooperativo de threads."
+
+  - id: desafio-14
+    title: "Fila circular sem alocação"
+    track: dsa
+    difficulty: beginner
+    points: 100
+    estimated_minutes: 40
+    status: planned
+    prerequisites: []
+    summary: "Ring buffer de capacidade fixa com testes de borda (cheia/vazia/wrap-around)."
+
+  - id: desafio-15
+    title: "Heap de prioridades"
+    track: dsa
+    difficulty: intermediate
+    points: 150
+    estimated_minutes: 50
+    status: planned
+    prerequisites: [desafio-14]
+    summary: "Binary heap com decrease-key, usado por um escalonador de tarefas."
+
+  - id: desafio-16
+    title: "O caminho mais curto"
+    track: dsa
+    difficulty: advanced
+    points: 250
+    estimated_minutes: 75
+    status: planned
+    prerequisites: [desafio-15]
+    summary: "Grafos: BFS, Dijkstra e Union-Find com testes de desempenho."
+
+  - id: desafio-17
+    title: "Desligamento gracioso"
+    track: go
+    difficulty: intermediate
+    points: 200
+    estimated_minutes: 60
+    status: planned
+    prerequisites: [desafio-8]
+    summary: "Go: servidor HTTP com middleware e graceful shutdown via sinais."
+
+  - id: desafio-18
+    title: "Probes que mentem"
+    track: kubernetes
+    difficulty: intermediate
+    points: 200
+    estimated_minutes: 60
+    status: planned
+    prerequisites: [desafio-10]
+    summary: "Kubernetes: liveness vs readiness vs startup probes num serviço de inicialização lenta."
+
+  - id: desafio-19
+    title: "Rollout e rollback"
+    track: kubernetes
+    difficulty: advanced
+    points: 250
+    estimated_minutes: 75
+    status: planned
+    prerequisites: [desafio-10]
+    summary: "Kubernetes: estratégias de rolling update, maxSurge/maxUnavailable e rollback de uma versão defeituosa."
+
+  - id: desafio-20
+    title: "O consumidor que processava duas vezes"
+    track: database
+    difficulty: advanced
+    points: 300
+    estimated_minutes: 90
+    status: planned
+    prerequisites: [desafio-9]
+    summary: "Arquitetura: idempotência de consumidores e outbox pattern com PostgreSQL."

@@ -1,0 +1,35 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: __ID__
+title: "__TITLE__"
+summary: "TODO: uma frase descrevendo o problema que o participante vai resolver."
+track: __TRACK__
+language: __LANGUAGE__
+__STANDARD_LINE__
+__TOOLCHAIN_LINE__
+difficulty: __DIFFICULTY__
+
+learning_objectives:
+  - "TODO: objetivo concreto e verificável"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+
+estimated_minutes: 30
+points: 100
+tags: [todo]
+prerequisites: []
+next: []
+achievements: []
+# Gere com: python3 scripts/lib/gq.py checksum .   (depois de finalizar o código inicial)
+# starter_checksum: "sha256:..."
