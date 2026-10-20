@@ -1,0 +1,37 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-10
+title: "O Deployment que nunca ficou pronto"
+summary: "Diagnosticar, com kubectl describe/logs/events, um Deployment num cluster kind que falha em cadeia (imagem, configuração, memória, probes, Service e securityContext) e corrigir os manifests até o serviço responder pelo DNS do cluster."
+track: kubernetes
+language: yaml
+difficulty: advanced
+
+learning_objectives:
+  - "Investigar pods com kubectl get, describe, logs --previous e eventos para chegar à causa de ImagePullBackOff, CrashLoopBackOff e OOMKilled"
+  - "Injetar configuração com ConfigMap e envFrom, entendendo que o nome da chave vira o nome da variável de ambiente"
+  - "Dimensionar requests e limits de memória a partir do consumo real do processo"
+  - "Configurar readiness e liveness probes HTTP apontando para porta e caminho corretos"
+  - "Relacionar labels e selectors para que um Service tenha endpoints e responda pelo DNS do cluster"
+  - "Endurecer o contêiner com securityContext (runAsNonRoot, allowPrivilegeEscalation, readOnlyRootFilesystem)"
+
+environment:
+  type: kind
+  requires: [docker, kind, kubectl]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 420
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - k8s
+
+estimated_minutes: 90
+points: 300
+tags: [kubernetes, kind, kubectl, deployment, configmap, probes, resources, service, troubleshooting]
+prerequisites: [desafio-9]
+next: []
+achievements: ["Encantador de CrashLoops"]
+starter_checksum: "sha256:65d1d0d559853f7441a726b4919bb57bdf297e8615df34a34b4cb96a5c975230"

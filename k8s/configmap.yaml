@@ -1,0 +1,12 @@
+# Configuração do inventory-api, injetada como variáveis de ambiente.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: inventory-api-config
+  labels:
+    app.kubernetes.io/name: inventory-api
+    app.kubernetes.io/part-of: gitquest
+data:
+  DB_URL: "postgres://inventory@postgres.desafio-10.svc.cluster.local:5432/inventory"
+  # Requisito de desempenho do time: o cache precisa de 64 MiB.
+  CACHE_MB: "64"
