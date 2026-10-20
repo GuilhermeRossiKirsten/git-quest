@@ -1,0 +1,45 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-11
+title: "Move semantics sem cópias escondidas"
+summary: "C++11: rvalue references, std::move, noexcept e parâmetros sink num barramento de mensagens que copia payloads de 100 KB às escondidas."
+track: cpp
+language: cpp
+standard: cpp11
+toolchain: "gcc:14.2.0"
+difficulty: intermediate
+
+learning_objectives:
+  - "Medir cópias profundas escondidas e localizar onde um movimento vira cópia"
+  - "Reconhecer quando funções membro especiais declaradas suprimem o movimento implícito (regra do zero/cinco)"
+  - "Marcar movimentos como noexcept para que std::vector mova em vez de copiar ao realocar"
+  - "Usar parâmetros sink por valor, emplace_back e retorno por valor sem std::move (NRVO)"
+  - "Evitar std::move em objetos const e deixar objetos movidos em estado válido, inclusive na automovimentação"
+  - "Preservar semântica de valor: copiar explicitamente continua produzindo objetos independentes"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src/buffer.h
+  - src/buffer.cpp
+  - src/message.h
+  - src/message.cpp
+  - src/batch.h
+  - src/batch.cpp
+
+estimated_minutes: 45
+points: 150
+tags: [cpp11, move-semantics, noexcept, rvalue-references, nrvo, rule-of-five, sanitizers]
+prerequisites: [desafio-1]
+next: [desafio-2]
+achievements: ["Zero cópias"]
+# Gerado com: python3 scripts/lib/gq.py checksum .   (identifica o código inicial intocado)
+starter_checksum: "sha256:8b99b91f1469112e73b85e00e6a0fc4ca0a11ae09cc9c9f873d6457c24c14444"
