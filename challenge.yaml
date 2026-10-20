@@ -1,0 +1,43 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-13
+title: "jthread e stop tokens"
+summary: "C++20: um serviço de ingestão com workers, fila bloqueante e heartbeat trava no shutdown, perde registros e deixa threads órfãs; migre para std::jthread, std::stop_token e condition_variable_any até o encerramento ser rápido, completo e livre de data races."
+track: cpp
+language: cpp
+standard: cpp20
+toolchain: "gcc:14.2.0"
+difficulty: advanced
+
+learning_objectives:
+  - "Usar std::jthread para que threads sejam paradas e juntadas automaticamente (RAII), inclusive quando um construtor lança"
+  - "Implementar cancelamento cooperativo com std::stop_token, std::stop_source e std::stop_callback"
+  - "Esperar em std::condition_variable_any::wait com stop_token e predicado, evitando despertares espúrios e perdidos"
+  - "Projetar shutdown gracioso (drena) e interrupção (descarta) com garantias de exatamente uma vez"
+  - "Diagnosticar data races, threads órfãs e deadlocks com ThreadSanitizer, AddressSanitizer e testes com prazo"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src/blocking_queue.h
+  - src/heartbeat.h
+  - src/heartbeat.cpp
+  - src/ingestor.h
+  - src/ingestor.cpp
+
+estimated_minutes: 60
+points: 250
+tags: [cpp20, jthread, stop-token, condition-variable, concurrency, thread-sanitizer, shutdown]
+prerequisites: [desafio-4]
+next: [desafio-12]
+achievements: ["Desligamento gracioso"]
+# Gerado com: python3 scripts/lib/gq.py checksum .   (identifica o código inicial intocado)
+starter_checksum: "sha256:3aee801a427969d0a04272d6f77b7d68ba9f88f19a15271fc378a88cb5a4b1f9"
