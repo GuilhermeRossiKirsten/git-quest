@@ -4,10 +4,11 @@
 # C++14 estrito com AddressSanitizer e UndefinedBehaviorSanitizer: um crash ou
 # um erro de compilação reprova só o próprio critério.
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 
 CXX=${CXX:-g++}
 STD_FLAGS=(-std=c++14 -pedantic-errors)
+# shellcheck disable=SC2054  # a vírgula pertence ao valor de -fsanitize
 SAN_FLAGS=(-g -O1 -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=all)
 export ASAN_OPTIONS=detect_stack_use_after_return=1:detect_leaks=1:halt_on_error=1:color=never
 export UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1:color=never
