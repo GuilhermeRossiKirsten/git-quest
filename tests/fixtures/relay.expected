@@ -1,0 +1,13 @@
+host        = 10.20.0.15
+port        = 9443
+retries     = -1 (sem limite)
+sample_rate = 0
+debug       = true
+banner      = ""
+
+[database]
+  connection_string -> texto "postgres://relay@db.internal:5432/relay_production"  (texto: "postgres://relay@db.internal:5432/relay_production")
+  password -> texto "s3nh4#forte!2024"  (texto: "s3nh4#forte!2024")
+  pool_size -> long 16  (texto: "16")
+  read_only -> bool false  (texto: "no")
+  statement_timeout -> double 2.5  (texto: "2.5")

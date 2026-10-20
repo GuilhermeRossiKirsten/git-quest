@@ -1,0 +1,39 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-3
+title: "O valor que não estava lá"
+summary: "Um parser de configuração INI com interface C++17 esconde um núcleo legado de valores sentinela, exceções e std::string_view pendurados; faça a implementação cumprir o contrato de std::optional, std::string_view e std::variant."
+track: cpp
+language: cpp
+standard: cpp17
+toolchain: "gcc:14.2.0"
+difficulty: intermediate
+
+learning_objectives:
+  - "Representar ausência de valor com std::optional em vez de valores sentinela (-1, 0, string vazia)"
+  - "Garantir que todo std::string_view devolvido aponte para memória que continua viva, usando o AddressSanitizer para provar"
+  - "Converter texto em número sem exceções e sem aceitar sobras, com std::from_chars"
+  - "Escolher a alternativa correta de um std::variant e consumi-lo com std::visit"
+  - "Implementar uma especificação de formato com casos de borda (espaços, CRLF, comentários, chaves duplicadas)"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src/config.hpp
+  - src/config.cpp
+
+estimated_minutes: 50
+points: 150
+tags: [cpp17, optional, string-view, variant, from-chars, sanitizers, parsing]
+prerequisites: [desafio-1]
+next: [desafio-5]
+achievements: ["Nada além do nullopt"]
+starter_checksum: "sha256:a196af3a76ab14d4886578f5c3761831ad2e5cd4f9ac251f9d28090ab2871dbd"
