@@ -1,0 +1,40 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-5
+title: "Erros que não se escondem"
+summary: "Um analisador de logs de acesso engole linhas inválidas, numera erros errado e calcula p95 errado; reescreva o tratamento de erros com std::expected, ranges e std::format (C++23)."
+track: cpp
+language: cpp
+standard: cpp23
+toolchain: "gcc:14.2.0"
+difficulty: advanced
+
+learning_objectives:
+  - "Modelar falhas esperadas como valores com std::expected<T, E>, sem exceções para controle de fluxo"
+  - "Encadear etapas de validação com and_then, transform, or_else e transform_error"
+  - "Percorrer texto com adaptadores de ranges (split, enumerate, chunk_by, transform) e ranges::to"
+  - "Preservar contexto do erro: número da linha 1-based, campo culpado e motivo tipado (enum class)"
+  - "Gerar saída com formato exato usando std::format/std::print"
+  - "Verificar o suporte do compilador a C++23 com feature-test macros e validar o código com ASan/UBSan"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+
+estimated_minutes: 75
+points: 250
+tags: [cpp23, expected, ranges, format, print, error-handling, sanitizers]
+prerequisites: [desafio-3, desafio-4]
+next: []
+achievements: ["Nada se esconde"]
+# Gerado com: python3 scripts/lib/gq.py checksum .   (código inicial final)
+starter_checksum: "sha256:7e4058ddfc7311ce982652676133814d34628edd214179de45b98317328f16c0"

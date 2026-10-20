@@ -1,0 +1,9 @@
+linhas: 14 | válidas: 9 | inválidas: 4 | em branco: 1
+status: 200=6 201=1 204=1 503=1
+latência: p50=15ms p95=1200ms
+top: /api/items (3), /api/orders/42 (2), /café/menu (2)
+erros:
+  linha 7: bad_status (campo 4)
+  linha 10: bad_latency (campo 5)
+  linha 11: bad_method (campo 2)
+  linha 12: extra_fields (campo 6)
