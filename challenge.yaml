@@ -1,0 +1,39 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-4
+title: "Contratos de template"
+summary: "Uma biblioteca de métricas header-only aceita qualquer tipo e erra em silêncio; escreva os concepts C++20 que transformam esses usos em erros de compilação claros e corrija o comportamento."
+track: cpp
+language: cpp
+standard: cpp20
+toolchain: "gcc:14.2.0"
+difficulty: intermediate
+
+learning_objectives:
+  - "Definir concepts C++20 combinando concepts da biblioteca padrão (std::integral, std::ranges::input_range, std::equality_comparable) e requires-expressions"
+  - "Restringir function templates, class templates e funções-membro com constraints e requires-clauses"
+  - "Distinguir o que o tipo garante (contrato em tempo de compilação) do que o valor garante (verificação em tempo de execução)"
+  - "Verificar contratos com static_assert e requires-expressions, inclusive casos que NÃO devem compilar"
+  - "Ler e produzir diagnósticos de compilação que citam o contrato violado"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+
+estimated_minutes: 60
+points: 200
+tags: [cpp20, concepts, templates, constraints, requires, static-assert]
+prerequisites: [desafio-2]
+next: [desafio-5]
+achievements: ["Guardião dos Contratos"]
+# Gerado com: python3 scripts/lib/gq.py checksum .   (identifica o código inicial intocado)
+starter_checksum: "sha256:9d788d5b5b2fb2969f4ff6c556c596d8d041fcd943a42d0ebf9c6db8af3803b4"
