@@ -1,0 +1,40 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-7
+title: "O pool que transbordou"
+summary: "Corrija um worker pool genérico em Go que ignora o limite de workers, embaralha resultados, tem data races, vaza goroutines e não cancela no primeiro erro."
+track: go
+language: go
+difficulty: intermediate
+
+learning_objectives:
+  - "Limitar a concorrência com um worker pool em vez de uma goroutine por item"
+  - "Preservar a ordem dos resultados sem mutex, gravando por índice"
+  - "Encontrar e eliminar data races com go test -race"
+  - "Usar sync.WaitGroup corretamente (Add antes de go, ou wg.Go)"
+  - "Propagar o primeiro erro cancelando o restante com context e preservando errors.Is"
+  - "Respeitar cancelamento e deadline do chamador"
+  - "Garantir que nenhuma goroutine sobreviva ao retorno da função"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src/pool
+
+estimated_minutes: 60
+points: 200
+tags: [go, concurrency, goroutines, channels, context, race-detector, generics]
+prerequisites: []
+next: [desafio-8]
+achievements:
+  - "Represa de Goroutines — conteve o pool que transbordou sem deixar nenhuma goroutine para trás"
+# Gerado com: python3 scripts/lib/gq.py checksum .
+starter_checksum: "sha256:5d39627ac8cfd2e195dce3ec09d37532b9bed107f38e6d13f203ee86bd506d99"
