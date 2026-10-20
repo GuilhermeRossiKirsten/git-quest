@@ -111,6 +111,33 @@ class CatalogTest(unittest.TestCase):
         self.assertTrue(any("desconhecido" in e for e in errors))
 
 
+class ProgressTest(unittest.TestCase):
+    CATALOG = {"challenges": [
+        {"id": "desafio-1", "track": "cpp", "points": 100, "status": "available", "prerequisites": []},
+        {"id": "desafio-2", "track": "cpp", "points": 150, "status": "available", "prerequisites": ["desafio-1"]},
+        {"id": "desafio-3", "track": "go", "points": 200, "status": "available", "prerequisites": ["desafio-2"]},
+        {"id": "desafio-4", "track": "go", "points": 999, "status": "planned", "prerequisites": []},
+    ]}
+
+    def test_report_counts_points_and_suggests_unlocked_challenge(self):
+        done = {"desafio-1": {"at": "2026-10-20T10:00:00Z", "track": "cpp", "points": "100"}}
+        text = gq.progress_report(self.CATALOG, done)
+        self.assertIn("1/3 desafios, 100/450 pontos", text)   # planned ones do not count
+        self.assertRegex(text, r"cpp .* 1/2 .* próximo: desafio-2")
+        self.assertRegex(text, r"go .* 0/1 .* próximo: -")     # desafio-3 still locked
+
+    def test_markdown_and_tsv_loading(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "progress.tsv")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write("desafio-1\t2026-10-20T10:00:00Z\tcpp\t100\tabc123\nlixo\n")
+            done = gq.load_progress(path)
+        self.assertEqual(list(done), ["desafio-1"])
+        md = gq.progress_report(self.CATALOG, done, markdown=True)
+        self.assertIn("| cpp | 1/2 | 100 | desafio-2 |", md)
+        self.assertIn("- `desafio-1` — 2026-10-20T10:00:00Z (+100)", md)
+
+
 class CliOutputTest(unittest.TestCase):
     def test_output_uses_lf_on_every_platform(self):
         # Bash reads this output with mapfile; a trailing \r breaks path matching on Windows.

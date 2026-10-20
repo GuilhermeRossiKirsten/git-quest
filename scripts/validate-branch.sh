@@ -26,7 +26,9 @@ gq_title "Contrato do desafio ($dir)"
 gq_ok "challenge.yaml, arquivos obrigatórios e README válidos"
 
 if command -v shellcheck >/dev/null 2>&1; then
-  shellcheck -x -e SC1091 "$dir/start.sh" "$dir/test.sh" && gq_ok "shellcheck sem alertas"
+  # Every challenge script (the vendored scripts/ are linted on main).
+  mapfile -t sh_files < <(cd "$dir" && git ls-files '*.sh' | grep -v '^scripts/')
+  (cd "$dir" && shellcheck -x -e SC1091 "${sh_files[@]}") && gq_ok "shellcheck sem alertas (${#sh_files[@]} scripts)"
 else
   gq_warn "shellcheck não instalado; análise estática dos scripts pulada"
 fi

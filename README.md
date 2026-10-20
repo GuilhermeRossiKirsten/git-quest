@@ -68,6 +68,7 @@ Os desafios não exigem ordem linear; os pré-requisitos são explícitos.
 | `gitquest test` | executa `./test.sh` do desafio atual; ao passar, registra pontos e conquistas |
 | `gitquest hints [nível]` | mostra as dicas até o nível pedido |
 | `gitquest status` | branch, estado do Git, arquivos alterados fora do escopo, pontuação |
+| `gitquest progress [--markdown]` | relatório por trilha: concluídos, pontos e próximo desafio desbloqueado |
 | `gitquest validate` | valida o contrato do desafio (para autores) |
 
 Saída: `0` sucesso, `1` falha, `2` uso incorreto. O progresso fica em
