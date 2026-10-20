@@ -1,0 +1,40 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-9
+title: "A imagem de um gigabyte"
+summary: "Transformar a imagem Docker de 900 MB de um microsserviço Go em uma imagem mínima, sem root, com health check e sem segredos ou código-fonte em nenhuma camada."
+track: docker
+# O participante escreve Dockerfile/.dockerignore; o serviço (fixo) é em Go.
+language: dockerfile
+difficulty: intermediate
+
+learning_objectives:
+  - "Separar build e runtime com multi-stage build e uma imagem final mínima (distroless ou scratch)"
+  - "Gerar um binário Go estático adequado a uma imagem sem libc"
+  - "Executar o serviço como usuário não-root, com sistema de arquivos somente leitura e sem capabilities"
+  - "Declarar um HEALTHCHECK que funcione numa imagem sem shell"
+  - "Controlar o contexto de build com .dockerignore para não vazar segredos, .git e código-fonte"
+  - "Ordenar instruções para aproveitar o cache de camadas do BuildKit"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 600
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - Dockerfile
+  - .dockerignore
+
+estimated_minutes: 60
+points: 200
+tags: [docker, dockerfile, multi-stage, distroless, security, buildkit, go]
+prerequisites: []
+next: [desafio-10]
+achievements: ["Regime de camadas"]
+# Gere com: python3 scripts/lib/gq.py checksum .   (depois de finalizar o código inicial)
+starter_checksum: "sha256:efef3160e706f619f1a994916de68a39649977542dbaa1e4dc24eeb35f161868"
