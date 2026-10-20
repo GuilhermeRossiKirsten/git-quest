@@ -28,6 +28,7 @@ SECRET=$(sed -n 's/^PAYMENTS_API_TOKEN=//p' .env 2>/dev/null | tr -d '\r')
 [[ -n "$SECRET" ]] || gq_die ".env original não encontrado — restaure-o com: git checkout -- .env"
 
 TMP=$(mktemp -d)
+# shellcheck disable=SC2317  # chamada indiretamente pelo trap
 cleanup() {
   docker rm -f "$RUN_NAME" "$RO_NAME" >/dev/null 2>&1 || true
   docker image rm "$PROBE_IMAGE" >/dev/null 2>&1 || true
