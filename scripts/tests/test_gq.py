@@ -91,6 +91,14 @@ class CatalogTest(unittest.TestCase):
         path = os.path.join(os.path.dirname(__file__), "..", "..", "config", "challenge-catalog.yaml")
         self.assertEqual(gq.validate_catalog(gq.load_yaml(path)), [])
 
+    def test_docs_catalog_lists_every_challenge(self):
+        root = os.path.join(os.path.dirname(__file__), "..", "..")
+        data = gq.load_yaml(os.path.join(root, "config", "challenge-catalog.yaml"))
+        with open(os.path.join(root, "docs", "challenge-catalog.md"), encoding="utf-8") as fh:
+            doc = fh.read()
+        missing = [c["id"] for c in data["challenges"] if f"`{c['id']}`" not in doc]
+        self.assertEqual(missing, [], "ids ausentes em docs/challenge-catalog.md")
+
     def test_detects_cycles_and_unknown_prereqs(self):
         base = ("challenges:\n"
                 "  - id: desafio-1\n    title: a\n    track: go\n    difficulty: beginner\n    points: 10\n"
