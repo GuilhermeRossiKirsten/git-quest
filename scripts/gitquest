@@ -235,7 +235,8 @@ cmd_status() {
     touched=${touched%$'\n'}
     if [[ -n "$touched" ]]; then
       gq_warn "arquivos fora do escopo foram alterados — o avaliador usa as versões originais:"
-      sed 's/^/    /' <<<"$touched" >&2
+      while IFS= read -r f; do printf '    %s
+' "$f" >&2; done <<<"$touched"
     fi
   fi
   local pf; pf=$(progress_file)
