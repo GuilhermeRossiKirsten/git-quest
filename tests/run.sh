@@ -4,7 +4,7 @@
 # Cada teste roda num processo separado com timeout próprio: um laço infinito
 # reprova só aquele teste e não trava o avaliador.
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 
 TEST_TIMEOUT=${GQ_TEST_TIMEOUT:-20}
 PERF_TIMEOUT=${GQ_PERF_TIMEOUT:-20}
