@@ -45,8 +45,9 @@ gq_require_cmd() {
 
 # gq_version_ge <have> <want> — true when have >= want (dotted numeric versions)
 gq_version_ge() {
-  local IFS=.
-  local -a a=($1) b=($2)
+  local -a a b
+  IFS=. read -ra a <<<"$1"
+  IFS=. read -ra b <<<"$2"
   local i
   for ((i = 0; i < ${#b[@]}; i++)); do
     local x=${a[i]:-0} y=${b[i]:-0}
