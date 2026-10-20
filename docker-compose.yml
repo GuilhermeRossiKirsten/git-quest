@@ -1,0 +1,42 @@
+# Ambiente do desafio-20: só o PostgreSQL. O código Go (consumidor, relay,
+# testes e demonstração) roda em containers descartáveis da imagem de
+# toolchain (Dockerfile), ligados à rede interna abaixo — veja start.sh/test.sh.
+#
+#   docker compose -p gitquest-desafio-20 up -d --wait
+#   docker compose -p gitquest-desafio-20 exec postgres psql -U gitquest -d payments_sim
+name: gitquest-desafio-20
+
+services:
+  postgres:
+    image: postgres:16.4-alpine3.20
+    environment:
+      POSTGRES_USER: gitquest
+      # Banco descartável, acessível apenas pela rede interna do compose.
+      POSTGRES_PASSWORD: gitquest
+      POSTGRES_DB: payments
+    # Banco de laboratório: durabilidade relaxada para os testes rodarem rápido.
+    # Nunca use fsync=off em produção.
+    command: ["postgres", "-c", "fsync=off", "-c", "synchronous_commit=off",
+              "-c", "full_page_writes=off", "-c", "max_connections=200"]
+    # Sem "ports": o PostgreSQL não é exposto no host.
+    networks: [internal]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gitquest -d payments"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    mem_limit: 1g
+    cpus: 2
+
+networks:
+  internal:
+    name: gitquest-desafio-20-net
+    # Rede interna: os containers ligados a ela não acessam a internet.
+    internal: true
+
+volumes:
+  pgdata:
+    name: gitquest-desafio-20-pgdata

@@ -1,0 +1,39 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-20
+title: "O consumidor que processava duas vezes"
+summary: "Tornar idempotente um consumidor de pagamentos em Go sobre PostgreSQL que, com reentregas at-least-once, quedas e concorrência, cobra duas vezes, perde eventos por escrita dupla e sofre lost update — usando restrição única na mesma transação, transactional outbox e UPDATE atômico."
+track: database
+language: go
+difficulty: advanced
+
+learning_objectives:
+  - "Tornar um consumidor at-least-once idempotente com uma chave de deduplicação protegida por PRIMARY KEY e INSERT ... ON CONFLICT DO NOTHING na mesma transação do efeito"
+  - "Substituir a escrita dupla banco + broker pelo transactional outbox, gravando o evento na transação do efeito"
+  - "Implementar um relay at-least-once que marca o evento como publicado só depois de o broker aceitá-lo"
+  - "Evitar check-then-act e lost update sob READ COMMITTED com UPDATE atômico e condicional ou SELECT ... FOR UPDATE"
+  - "Raciocinar sobre quedas em cada ponto de um fluxo e sobre o que a atomicidade de uma transação garante"
+  - "Evoluir o schema com uma migração versionada sem alterar o schema base"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 600
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - internal/payments
+  - migrations/002_payments_consumer.sql
+
+estimated_minutes: 90
+points: 300
+tags: [go, postgresql, idempotency, transactional-outbox, at-least-once, isolation, lost-update, docker-compose, pgx]
+prerequisites: [desafio-9]
+next: []
+achievements: ["Exatamente uma vez (efetivamente)"]
+# Gere com: python3 scripts/lib/gq.py checksum .   (depois de finalizar o código inicial)
+starter_checksum: "sha256:088f21a489144e9d072eff9ba9569b756b622d06d45efd4e3276ad9f3e4f89d1"
