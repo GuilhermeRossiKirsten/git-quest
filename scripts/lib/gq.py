@@ -495,6 +495,56 @@ def _check_cycles(items):
 
 
 # --------------------------------------------------------------------------
+# Local progress report
+# --------------------------------------------------------------------------
+
+def load_progress(path):
+    """progress.tsv rows: id, completed_at, track, points, commit."""
+    done = {}
+    if os.path.isfile(path):
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                parts = line.rstrip("\n").split("\t")
+                if len(parts) >= 4 and ID_RE.match(parts[0]):
+                    done.setdefault(parts[0], {"at": parts[1], "track": parts[2], "points": parts[3]})
+    return done
+
+
+def progress_report(catalog, done, markdown=False):
+    items = [c for c in catalog.get("challenges") or [] if c.get("status") == "available"]
+    tracks = []
+    for c in items:
+        if c["track"] not in tracks:
+            tracks.append(c["track"])
+    lines = []
+    if markdown:
+        lines += ["# Progresso no GitQuest", "",
+                  "| Trilha | Concluídos | Pontos | Próximo sugerido |", "|---|---|---|---|"]
+    total_pts = sum(int(done[c["id"]]["points"]) for c in items if c["id"] in done)
+    max_pts = sum(c["points"] for c in items)
+    for track in tracks:
+        ch = [c for c in items if c["track"] == track]
+        n_done = sum(1 for c in ch if c["id"] in done)
+        pts = sum(c["points"] for c in ch if c["id"] in done)
+        # The first unfinished challenge whose prerequisites are all done.
+        nxt = next((c["id"] for c in ch if c["id"] not in done and
+                    all(p in done for p in c.get("prerequisites") or [])), "-")
+        bar = "█" * n_done + "░" * (len(ch) - n_done)
+        if markdown:
+            lines.append(f"| {track} | {n_done}/{len(ch)} | {pts} | {nxt} |")
+        else:
+            lines.append(f"  {track:<11} {bar:<8} {n_done}/{len(ch)}  {pts:>4} pts   próximo: {nxt}")
+    summary = f"{len(done)}/{len(items)} desafios, {total_pts}/{max_pts} pontos"
+    if markdown:
+        lines += ["", f"**Total:** {summary}", "", "## Concluídos", ""]
+        for cid, info in sorted(done.items(), key=lambda kv: kv[1]["at"]):
+            lines.append(f"- `{cid}` — {info['at']} (+{info['points']})")
+    else:
+        lines += ["", f"  Total: {summary}"]
+    return "\n".join(lines)
+
+
+# --------------------------------------------------------------------------
 # CLI
 # --------------------------------------------------------------------------
 
@@ -561,6 +611,11 @@ def main(argv):
                     print("\t".join(str(ch.get(k, "")) for k in
                                     ("id", "track", "difficulty", "points",
                                      "estimated_minutes", "status", "title")))
+            return 0
+        if cmd == "progress":
+            # progress <catalog> <progress.tsv> [--markdown]
+            print(progress_report(load_yaml(args[0]), load_progress(args[1]),
+                                  markdown="--markdown" in args[2:]))
             return 0
         if cmd == "checksum":
             root = args[0] if args else "."
