@@ -1,0 +1,38 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-17
+title: "Desligamento gracioso"
+summary: "Consertar um serviço HTTP em Go que, ao receber SIGTERM, derruba pedidos em andamento, perde registros do journal e nunca sai do balanceador — com middlewares de timeout e recover que vazam goroutines e deixam um pânico matar o processo."
+track: go
+language: go
+difficulty: intermediate
+
+learning_objectives:
+  - "Tratar SIGTERM/SIGINT com signal.NotifyContext e orquestrar o desligamento: readiness 503, drenagem, http.Server.Shutdown com prazo e Close forçado depois"
+  - "Entender que Serve retorna http.ErrServerClosed assim que Shutdown começa e que o processo precisa esperar Shutdown terminar"
+  - "Parar workers de fundo por context.Context na ordem certa e garantir que nenhuma goroutine vaze"
+  - "Manter um journal em arquivo consistente: escrita concorrente protegida, descarga final no Close e nada gravado para requisições abandonadas"
+  - "Escrever middlewares HTTP corretos com a stdlib: request id, log estruturado com log/slog, recover que responde 500 e timeout por requisição sem data race"
+  - "Distinguir liveness de readiness e escolher o código de saída do processo conforme o desligamento foi limpo ou não"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+  - cmd/orders
+
+estimated_minutes: 60
+points: 200
+tags: [go, graceful-shutdown, signals, net-http, middleware, context, slog, goroutine-leak, race-detector, kubernetes]
+prerequisites: [desafio-8]
+next: [desafio-18]
+achievements: ["Sai de cena sem derrubar a bandeja"]
+starter_checksum: "sha256:29c90843293421a83ca3fbff1ace728256b82ba4a29ebb52e5c4359e32b7f22b"
