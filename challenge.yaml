@@ -1,0 +1,37 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-8
+title: "A requisição que não sabia parar"
+summary: "Consertar um cliente HTTP com retry que ignora cancelamentos e prazos de context.Context, repete erros 4xx, vaza conexões, estoura o backoff e engole a causa dos erros."
+track: go
+language: go
+difficulty: intermediate
+
+learning_objectives:
+  - "Propagar context.Context até a requisição HTTP (NewRequestWithContext) para que cancelamentos e prazos interrompam conexão e leitura do corpo"
+  - "Esperar entre tentativas com select sobre ctx.Done() e um timer, em vez de time.Sleep"
+  - "Classificar falhas em transitórias (rede, 5xx, 429) e permanentes (demais 4xx), respeitando Retry-After"
+  - "Implementar backoff exponencial com teto sem overflow de time.Duration e desistir cedo quando o prazo restante não comporta a próxima espera"
+  - "Fechar sempre o corpo da resposta e limitar seu tamanho (io.LimitReader) para não vazar conexões nem memória"
+  - "Embrulhar erros com %w para que errors.Is/errors.As encontrem a causa original"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+
+estimated_minutes: 60
+points: 200
+tags: [go, context, cancellation, deadlines, net-http, retry, exponential-backoff, error-wrapping, race-detector]
+prerequisites: [desafio-7]
+next: [desafio-9]
+achievements: ["Sabe a hora de parar"]
+starter_checksum: "sha256:e1d16003d1613dfdf63064189d36fc986f2e06077398ab97d6d3193746dba0e4"
