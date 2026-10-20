@@ -2,7 +2,7 @@
 # Avaliação propriamente dita. Roda DENTRO do container de toolchain (via
 # ./test.sh) ou na sua máquina com GITQUEST_LOCAL=1 ./test.sh.
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 mkdir -p build
 
 failed=0
