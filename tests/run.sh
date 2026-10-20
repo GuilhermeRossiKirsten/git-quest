@@ -3,7 +3,7 @@
 # localmente com GITQUEST_LOCAL=1. Imprime um ✔/✘ por critério e termina com
 # código 0 somente se todos passarem.
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 
 if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
   GREEN=$'\033[32m' RED=$'\033[31m' BOLD=$'\033[1m' RESET=$'\033[0m'
