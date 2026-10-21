@@ -1,0 +1,36 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-19
+title: "Rollout e rollback"
+summary: "Reescrever a estratégia de deploy do catalog-api num cluster kind para que um release defeituoso seja barrado sem derrubar o serviço, detectado pelo prazo de progresso e revertido com kubectl rollout undo."
+track: kubernetes
+language: yaml
+difficulty: advanced
+
+learning_objectives:
+  - "Configurar RollingUpdate com maxSurge e maxUnavailable para trocar versões sem perder capacidade"
+  - "Usar readinessProbe e minReadySeconds para que só pods realmente estáveis contem como disponíveis"
+  - "Detectar um rollout travado com progressDeadlineSeconds e a condição Progressing/ProgressDeadlineExceeded"
+  - "Manter histórico de revisões (revisionHistoryLimit) e reverter com kubectl rollout undo e rollout history"
+  - "Proteger o serviço contra interrupções voluntárias com réplicas e um PodDisruptionBudget coerente"
+
+environment:
+  type: kind
+  requires: [docker, kind, kubectl]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 540
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - k8s
+
+estimated_minutes: 75
+points: 250
+tags: [kubernetes, kind, kubectl, deployment, rolling-update, rollback, readiness, poddisruptionbudget]
+prerequisites: [desafio-10]
+next: [desafio-20]
+achievements: ["Mestre do Rollback"]
+starter_checksum: "sha256:d4d280fb9831e49e6c12bee844e743895b7ff2e641f077f735863041eb0b79b9"
