@@ -20,6 +20,7 @@ Uso: ./scripts/gitquest <comando> [argumentos]
   test                    roda o validador do desafio atual e registra o progresso
   hints [nível]           mostra as dicas até o nível pedido (padrão: 1)
   status                  branch atual, estado do Git e progresso
+  progress [--markdown]   relatório de progresso por trilha (Markdown para compartilhar)
   validate [dir]          valida o contrato do desafio (challenge.yaml, scripts, README)
   help                    esta mensagem
 
@@ -254,6 +255,13 @@ cmd_status() {
   fi
 }
 
+cmd_progress() {
+  local flag=${1:-}
+  [[ -z "$flag" || "$flag" == --markdown ]] || { gq_error "uso: gitquest progress [--markdown]"; exit 2; }
+  [[ "$flag" == --markdown ]] || gq_title "Progresso por trilha"
+  gqpy progress "$(catalog_file)" "$(progress_file)" ${flag:+"$flag"}
+}
+
 cmd_validate() {
   local dir=${1:-$(repo_root)}
   local br; br=$(git -C "$dir" symbolic-ref --quiet --short HEAD 2>/dev/null || true)
@@ -270,6 +278,7 @@ main() {
     test) cmd_test "$@" ;;
     hints) cmd_hints "$@" ;;
     status) cmd_status "$@" ;;
+    progress) cmd_progress "$@" ;;
     validate) cmd_validate "$@" ;;
     help|-h|--help) usage ;;
     *) gq_error "comando desconhecido: $cmd"; usage >&2; exit 2 ;;
