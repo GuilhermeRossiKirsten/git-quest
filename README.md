@@ -13,7 +13,7 @@ main ─────────── catálogo, documentação, CLI, validador
 desafio-1 ────── C++11 · O vazamento silencioso
 desafio-2 ────── C++14 · Lambdas sem fronteiras
 ...
-desafio-10 ───── Kubernetes · O Deployment que nunca ficou pronto
+desafio-20 ───── Banco de dados · O consumidor que processava duas vezes
 ```
 
 ## Começo rápido
@@ -36,7 +36,7 @@ git add -A && git commit -m "resolve desafio-1"
 ```
 
 Requisitos mínimos: Git >= 2.23, Bash >= 4 e Python >= 3.8 (só biblioteca padrão).
-Os toolchains (GCC 14.2, Go 1.25, Kind) rodam em containers com versões fixadas, então o
+Os toolchains (GCC 14.2, Go 1.25, PostgreSQL 16, Kind) rodam em containers com versões fixadas, então o
 **Docker** é o único requisito pesado. Windows: use **WSL2** (recomendado) ou Git Bash —
 veja [docs/getting-started.md](docs/getting-started.md).
 
@@ -54,6 +54,16 @@ veja [docs/getting-started.md](docs/getting-started.md).
 | `desafio-8` | Go | intermediário | `context`, deadlines, retry com backoff |
 | `desafio-9` | Docker | intermediário | multi-stage, não-root, health check, segredos |
 | `desafio-10` | Kubernetes | avançado | diagnóstico de Deployment no Kind |
+| `desafio-11` | C++11 | intermediário | move semantics, `noexcept`, NRVO |
+| `desafio-12` | C++23 | avançado | `std::generator`, corrotinas preguiçosas |
+| `desafio-13` | C++20 | avançado | `std::jthread`, stop tokens, ThreadSanitizer |
+| `desafio-14` | Estruturas de dados | iniciante | ring buffer sem alocação |
+| `desafio-15` | Estruturas de dados | intermediário | heap indexado com decrease-key |
+| `desafio-16` | Estruturas de dados | avançado | BFS, Dijkstra, Union-Find |
+| `desafio-17` | Go | intermediário | graceful shutdown e middlewares HTTP |
+| `desafio-18` | Kubernetes | intermediário | liveness, readiness e startup probes |
+| `desafio-19` | Kubernetes | avançado | rollout sem indisponibilidade e rollback |
+| `desafio-20` | Banco de dados | avançado | outbox, consumidor idempotente, PostgreSQL |
 
 Catálogo completo, trilhas e roteiro: [docs/challenge-catalog.md](docs/challenge-catalog.md).
 Os desafios não exigem ordem linear; os pré-requisitos são explícitos.

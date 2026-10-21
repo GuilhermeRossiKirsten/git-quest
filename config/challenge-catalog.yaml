@@ -112,14 +112,14 @@ challenges:
     prerequisites: [desafio-9]
     summary: "Kubernetes (Kind): diagnosticar e corrigir um Deployment com falhas de imagem, configuração, probes, recursos e Service."
 
-  # --- Roteiro (planejados) --------------------------------------------------
+  # --- Segunda leva -----------------------------------------------------------
   - id: desafio-11
     title: "Move semantics sem cópias escondidas"
     track: cpp
     difficulty: intermediate
     points: 150
     estimated_minutes: 45
-    status: planned
+    status: available
     prerequisites: [desafio-1]
     summary: "C++11: rvalue references, std::move e contagem de cópias num buffer de mensagens."
 
@@ -129,7 +129,7 @@ challenges:
     difficulty: advanced
     points: 300
     estimated_minutes: 90
-    status: planned
+    status: available
     prerequisites: [desafio-4]
     summary: "C++20/23: coroutines e std::generator num leitor de arquivos preguiçoso."
 
@@ -139,7 +139,7 @@ challenges:
     difficulty: advanced
     points: 250
     estimated_minutes: 60
-    status: planned
+    status: available
     prerequisites: [desafio-4]
     summary: "C++20: std::jthread e std::stop_token para encerramento cooperativo de threads."
 
@@ -149,7 +149,7 @@ challenges:
     difficulty: beginner
     points: 100
     estimated_minutes: 40
-    status: planned
+    status: available
     prerequisites: []
     summary: "Ring buffer de capacidade fixa com testes de borda (cheia/vazia/wrap-around)."
 
@@ -159,7 +159,7 @@ challenges:
     difficulty: intermediate
     points: 150
     estimated_minutes: 50
-    status: planned
+    status: available
     prerequisites: [desafio-14]
     summary: "Binary heap com decrease-key, usado por um escalonador de tarefas."
 
@@ -169,7 +169,7 @@ challenges:
     difficulty: advanced
     points: 250
     estimated_minutes: 75
-    status: planned
+    status: available
     prerequisites: [desafio-15]
     summary: "Grafos: BFS, Dijkstra e Union-Find com testes de desempenho."
 
@@ -179,7 +179,7 @@ challenges:
     difficulty: intermediate
     points: 200
     estimated_minutes: 60
-    status: planned
+    status: available
     prerequisites: [desafio-8]
     summary: "Go: servidor HTTP com middleware e graceful shutdown via sinais."
 
@@ -189,7 +189,7 @@ challenges:
     difficulty: intermediate
     points: 200
     estimated_minutes: 60
-    status: planned
+    status: available
     prerequisites: [desafio-10]
     summary: "Kubernetes: liveness vs readiness vs startup probes num serviço de inicialização lenta."
 
@@ -199,7 +199,7 @@ challenges:
     difficulty: advanced
     points: 250
     estimated_minutes: 75
-    status: planned
+    status: available
     prerequisites: [desafio-10]
     summary: "Kubernetes: estratégias de rolling update, maxSurge/maxUnavailable e rollback de uma versão defeituosa."
 
@@ -209,6 +209,57 @@ challenges:
     difficulty: advanced
     points: 300
     estimated_minutes: 90
-    status: planned
+    status: available
     prerequisites: [desafio-9]
     summary: "Arquitetura: idempotência de consumidores e outbox pattern com PostgreSQL."
+
+  # --- Roteiro (planejados) --------------------------------------------------
+  - id: desafio-21
+    title: "O processo que não morria"
+    track: linux
+    difficulty: intermediate
+    points: 200
+    estimated_minutes: 60
+    status: planned
+    prerequisites: []
+    summary: "Linux: fork/exec, sinais, processos zumbis, pipes e file descriptors herdados num supervisor de processos."
+
+  - id: desafio-22
+    title: "Mensagens pela metade"
+    track: network
+    difficulty: intermediate
+    points: 200
+    estimated_minutes: 60
+    status: planned
+    prerequisites: []
+    summary: "Redes: framing de mensagens sobre TCP (length-prefix), leituras parciais, timeouts e backpressure."
+
+  - id: desafio-23
+    title: "A consulta que varria a tabela"
+    track: database
+    difficulty: intermediate
+    points: 200
+    estimated_minutes: 60
+    status: planned
+    prerequisites: []
+    summary: "SQL: índices, EXPLAIN ANALYZE e paginação por keyset no PostgreSQL."
+
+  - id: desafio-24
+    title: "O cache que mentia"
+    track: database
+    difficulty: advanced
+    points: 250
+    estimated_minutes: 75
+    status: planned
+    prerequisites: [desafio-23]
+    summary: "Redis: cache-aside, invalidação, stampede e TTL com jitter."
+
+  - id: desafio-25
+    title: "Quem pode o quê"
+    track: kubernetes
+    difficulty: advanced
+    points: 250
+    estimated_minutes: 75
+    status: planned
+    prerequisites: [desafio-19]
+    summary: "Kubernetes: RBAC de menor privilégio e NetworkPolicy deny-by-default."
