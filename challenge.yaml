@@ -1,0 +1,36 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-18
+title: "Probes que mentem"
+summary: "Corrigir startup, liveness e readiness probes de um serviço de inicialização lenta num cluster kind, para que ele não reinicie durante o aquecimento nem quando a dependência cai, saia do Service quando não puder atender e seja reiniciado quando realmente travar."
+track: kubernetes
+language: yaml
+difficulty: intermediate
+
+learning_objectives:
+  - "Explicar o que cada probe decide: startup (o processo já iniciou?), liveness (reiniciar?) e readiness (receber tráfego?)"
+  - "Usar startupProbe para proteger um serviço de inicialização lenta, dimensionando periodSeconds x failureThreshold pelo pior caso"
+  - "Manter a liveness independente de dependências externas para evitar reinícios em cascata"
+  - "Ajustar periodSeconds, timeoutSeconds e failureThreshold da readiness para tirar pods do Service rapidamente"
+  - "Diagnosticar probes com kubectl describe, eventos Unhealthy/Killing, restartCount e EndpointSlices"
+
+environment:
+  type: kind
+  requires: [docker, kind, kubectl]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 420
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - k8s
+
+estimated_minutes: 60
+points: 200
+tags: [kubernetes, kind, kubectl, probes, liveness, readiness, startup, endpoints, troubleshooting]
+prerequisites: [desafio-10]
+next: [desafio-19]
+achievements: ["Detector de Mentiras"]
+starter_checksum: "sha256:7feba862d359e954fe0fb9874ef0d13245de5eab2f1d079443220d9aaeb531de"

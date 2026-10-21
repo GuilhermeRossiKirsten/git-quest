@@ -1,0 +1,60 @@
+# Dependência "pricing" do warmup-api (simulada). Faz parte do ambiente do
+# desafio: o start.sh e o test.sh aplicam este arquivo no namespace desafio-18.
+# NÃO é um arquivo editável.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pricing
+  labels:
+    app: pricing
+    app.kubernetes.io/part-of: gitquest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pricing
+  template:
+    metadata:
+      labels:
+        app: pricing
+        app.kubernetes.io/part-of: gitquest
+    spec:
+      containers:
+        - name: pricing
+          image: gitquest/warmup-api:1.0.0
+          imagePullPolicy: IfNotPresent
+          args: ["pricing"]
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 20m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 2
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pricing
+  labels:
+    app: pricing
+    app.kubernetes.io/part-of: gitquest
+spec:
+  type: ClusterIP
+  selector:
+    app: pricing
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

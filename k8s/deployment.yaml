@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: warmup-api
+  labels:
+    app: warmup-api
+    app.kubernetes.io/part-of: gitquest
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: warmup-api
+  template:
+    metadata:
+      labels:
+        app: warmup-api
+        app.kubernetes.io/part-of: gitquest
+    spec:
+      containers:
+        - name: api
+          image: gitquest/warmup-api:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: PRICING_URL
+              value: http://pricing
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+          livenessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 3
+          # Verificação "leve" para não sobrecarregar o serviço.
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: web
+            periodSeconds: 60
+            failureThreshold: 10
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
