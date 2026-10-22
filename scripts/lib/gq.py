@@ -397,6 +397,8 @@ def validate_tree(root, branch=None):
         base = os.path.basename(rel)
         if base == "Dockerfile" or base.startswith("Dockerfile."):
             errors += _check_dockerfile(path, rel)
+        if base in COMPOSE_FILES:
+            errors += _check_compose(path, rel)
         if os.path.isfile(path) and os.path.getsize(path) < 2_000_000:
             with open(path, "rb") as fh:
                 text = fh.read().decode("utf-8", "ignore")
@@ -406,27 +408,43 @@ def validate_tree(root, branch=None):
             if text == "" and base != ".gitkeep":
                 warnings.append(f"{rel}: arquivo vazio")
     if isinstance(data, dict) and data.get("environment", {}).get("type") == "docker" \
-            and not any(os.path.basename(f) == "Dockerfile" for f in files) \
+            and not any(os.path.basename(f) in ("Dockerfile",) + COMPOSE_FILES for f in files) \
             and data.get("track") != "docker":
-        warnings.append("environment.type=docker mas nenhum Dockerfile foi encontrado")
+        warnings.append("environment.type=docker mas nenhum Dockerfile ou arquivo compose foi encontrado")
     return errors, warnings
 
 
-def _check_dockerfile(path, rel):
+COMPOSE_FILES = ("docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml")
+
+
+def _image_pinned(image):
+    name = image.split("@")[0]
+    tag = name.rsplit(":", 1)[1] if ":" in name.split("/")[-1] else None
+    return "@sha256:" in image or (tag is not None and tag != "latest")
+
+
+def _check_images(path, rel, rx, what):
     errors = []
     with open(path, encoding="utf-8") as fh:
         for n, line in enumerate(fh, 1):
-            m = re.match(r"^\s*FROM\s+(?:--platform=\S+\s+)?(\S+)", line, re.I)
+            m = rx.match(line)
             if not m:
                 continue
-            image = m.group(1)
+            image = m.group(1).strip("'\"")
             if image.lower() == "scratch" or "$" in image:
                 continue
-            name = image.split("@")[0]
-            tag = name.rsplit(":", 1)[1] if ":" in name.split("/")[-1] else None
-            if "@sha256:" not in image and (tag is None or tag == "latest"):
-                errors.append(f"{rel}:{n}: imagem base sem versão fixada ({image})")
+            if not _image_pinned(image):
+                errors.append(f"{rel}:{n}: {what} sem versão fixada ({image})")
     return errors
+
+
+def _check_dockerfile(path, rel):
+    return _check_images(path, rel, re.compile(r"^\s*FROM\s+(?:--platform=\S+\s+)?(\S+)", re.I),
+                         "imagem base")
+
+
+def _check_compose(path, rel):
+    return _check_images(path, rel, re.compile(r"^\s*image:\s*(\S+)"), "imagem do serviço")
 
 
 # --------------------------------------------------------------------------
