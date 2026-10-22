@@ -6,6 +6,8 @@ import sys
 import tempfile
 import unittest
 
+# No __pycache__ in scripts/lib: it would show up as untracked on desafio-* branches.
+sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lib"))
 import gq  # noqa: E402
 

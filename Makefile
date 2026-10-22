@@ -26,7 +26,7 @@ lint:
 selftest:
 	@py=$$(for p in python3 python; do $$p -c '' 2>/dev/null && { echo $$p; break; }; done); \
 		[ -n "$$py" ] || { echo "Python >= 3.8 não encontrado" >&2; exit 1; }; \
-		$$py -m unittest discover -s scripts/tests -v
+		PYTHONDONTWRITEBYTECODE=1 $$py -m unittest discover -s scripts/tests -v
 
 sync-tooling:
 	@./scripts/sync-tooling.sh
