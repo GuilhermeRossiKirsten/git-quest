@@ -1,0 +1,288 @@
+#!/usr/bin/env bash
+# GitQuest CLI — a thin convenience layer over Git. It never discards changes.
+set -euo pipefail
+
+GQ_SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/common.sh
+source "$GQ_SCRIPTS/lib/common.sh"
+PY=$(gq_python)
+gqpy() { "$PY" "$GQ_SCRIPTS/lib/gq.py" "$@"; }
+
+usage() {
+  cat <<'EOF'
+GitQuest — desafios de engenharia de software organizados em branches.
+
+Uso: ./scripts/gitquest <comando> [argumentos]
+
+  list [--track T]        lista os desafios do catálogo
+  info desafio-N          metadados, objetivos e pré-requisitos de um desafio
+  start desafio-N         troca para a branch do desafio (sem descartar nada)
+  test                    roda o validador do desafio atual e registra o progresso
+  hints [nível]           mostra as dicas até o nível pedido (padrão: 1)
+  status                  branch atual, estado do Git e progresso
+  progress [--markdown]   relatório de progresso por trilha (Markdown para compartilhar)
+  validate [dir]          valida o contrato do desafio (challenge.yaml, scripts, README)
+  help                    esta mensagem
+
+Códigos de saída: 0 sucesso, 1 falha/testes reprovados, 2 uso incorreto.
+EOF
+}
+
+repo_root() {
+  git rev-parse --show-toplevel 2>/dev/null || gq_die "Execute dentro do repositório gitquest (git clone ...; cd gitquest)."
+}
+
+current_branch() { git symbolic-ref --quiet --short HEAD 2>/dev/null || echo "(detached)"; }
+
+valid_id() { [[ "$1" =~ ^desafio-[1-9][0-9]*$ ]]; }
+
+# The catalog lives on main. On a challenge branch read it from the local main
+# or from origin/main without touching the working tree.
+catalog_file() {
+  local root tmp ref
+  root=$(repo_root)
+  if [[ -f "$root/config/challenge-catalog.yaml" ]]; then
+    echo "$root/config/challenge-catalog.yaml"; return
+  fi
+  tmp=$(mktemp)
+  for ref in main origin/main; do
+    if git show "$ref:config/challenge-catalog.yaml" >"$tmp" 2>/dev/null; then
+      echo "$tmp"; return
+    fi
+  done
+  rm -f "$tmp"
+  gq_die "Catálogo não encontrado. Rode 'git fetch origin main' para obter a branch main."
+}
+
+progress_file() {
+  local dir
+  dir="$(git rev-parse --git-common-dir)/gitquest"
+  mkdir -p "$dir"
+  echo "$dir/progress.tsv"
+}
+
+cmd_list() {
+  local track=""
+  if [[ "${1:-}" == "--track" ]]; then
+    track=${2:-}
+    [[ -n "$track" ]] || gq_die "uso: gitquest list --track <trilha>"
+  fi
+  local cat done_ids
+  cat=$(catalog_file)
+  done_ids=$(cut -f1 "$(progress_file)" 2>/dev/null | sort -u || true)
+  printf '%s%-12s %-11s %-13s %5s %6s  %s%s\n' "$GQ_BOLD" "DESAFIO" "TRILHA" "NÍVEL" "PTS" "MIN" "TÍTULO" "$GQ_RESET"
+  local id tr diff pts min status title mark
+  while IFS=$'\t' read -r id tr diff pts min status title; do
+    [[ -n "$track" && "$tr" != "$track" ]] && continue
+    mark=" "
+    grep -qx "$id" <<<"$done_ids" && mark="${GQ_GREEN}✔${GQ_RESET}"
+    [[ "$status" == planned ]] && title="$title (planejado)"
+    printf '%-12s %-11s %-13s %5s %6s  %s %s\n' "$id" "$tr" "$diff" "$pts" "$min" "$mark" "$title"
+  done < <(gqpy catalog "$cat")
+}
+
+cmd_info() {
+  local id=${1:-}
+  [[ -n "$id" ]] || { gq_error "uso: gitquest info desafio-N"; exit 2; }
+  valid_id "$id" || { gq_error "nome inválido '$id' — use desafio-N"; exit 2; }
+  local cat out
+  cat=$(catalog_file)
+  out=$(gqpy catalog "$cat" "$id")
+  [[ -n "$out" ]] || gq_die "$id não está no catálogo. Veja: ./scripts/gitquest list"
+  gq_title "$id"
+  while IFS=$'\t' read -r k v; do printf '  %-18s %s\n' "$k" "$v"; done <<<"$out"
+  # Rich metadata comes from the challenge branch itself, when it is available.
+  local ref meta
+  for ref in "$id" "origin/$id"; do
+    if meta=$(git show "$ref:challenge.yaml" 2>/dev/null); then
+      local tmp; tmp=$(mktemp)
+      printf '%s\n' "$meta" >"$tmp"
+      echo
+      echo "  Objetivos de aprendizagem:"
+      gqpy get "$tmp" learning_objectives | sed 's/^/    - /'
+      echo "  Tags: $(gqpy get "$tmp" tags | paste -sd, - | sed 's/,/, /g')"
+      local std; std=$(gqpy get "$tmp" standard)
+      [[ -n "$std" ]] && echo "  Padrão C++: $std (toolchain $(gqpy get "$tmp" toolchain))"
+      echo "  Requer: $(gqpy get "$tmp" environment.requires | paste -sd, - | sed 's/,/, /g')"
+      rm -f "$tmp"
+      return 0
+    fi
+  done
+  echo
+  gq_warn "branch $id não encontrada localmente; rode 'git fetch origin' para ver os detalhes."
+}
+
+cmd_start() {
+  local id=${1:-}
+  [[ -n "$id" ]] || { gq_error "uso: gitquest start desafio-N"; exit 2; }
+  valid_id "$id" || { gq_error "nome inválido '$id' — use desafio-N (ex.: desafio-1)"; exit 2; }
+  repo_root >/dev/null
+  if [[ "$(current_branch)" == "$id" ]]; then
+    gq_ok "você já está em $id"
+  else
+    if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+      gq_error "Há modificações locais em $(current_branch). Nada foi alterado."
+      echo "  Para guardar seu progresso:   git add -A && git commit -m 'wip'"
+      echo "  Ou para guardar temporário:   git stash push -m 'gitquest'"
+      echo "  Depois rode novamente:        ./scripts/gitquest start $id"
+      exit 1
+    fi
+    if git show-ref --verify --quiet "refs/heads/$id"; then
+      git switch "$id"
+    elif git show-ref --verify --quiet "refs/remotes/origin/$id"; then
+      git switch --track "origin/$id"
+    else
+      if git remote get-url origin >/dev/null 2>&1; then
+        gq_info "branch $id não encontrada localmente; buscando em origin"
+        git fetch origin "$id:refs/remotes/origin/$id" 2>/dev/null \
+          || gq_die "$id não existe em origin. Veja os desafios: ./scripts/gitquest list"
+        git switch --track "origin/$id"
+      else
+        gq_die "$id não existe. Veja os desafios: ./scripts/gitquest list"
+      fi
+    fi
+  fi
+  echo
+  echo "Próximos passos:"
+  echo "  cat README.md        # leia o enunciado"
+  echo "  ./start.sh           # prepara o ambiente"
+  echo "  ./scripts/gitquest test"
+}
+
+require_challenge() {
+  local root
+  root=$(repo_root)
+  [[ -f "$root/challenge.yaml" ]] || gq_die "Você está em '$(current_branch)', que não é um desafio. Use: ./scripts/gitquest start desafio-N"
+  echo "$root"
+}
+
+cmd_test() {
+  local root id pts started rc
+  root=$(require_challenge)
+  id=$(gqpy get "$root/challenge.yaml" id)
+  pts=$(gqpy get "$root/challenge.yaml" points)
+  gq_title "Validando $id"
+  started=$(date +%s)
+  set +e
+  (cd "$root" && ./test.sh)
+  rc=$?
+  set -e
+  local elapsed=$(( $(date +%s) - started ))
+  if ((rc == 0)); then
+    local pf; pf=$(progress_file)
+    if ! cut -f1 "$pf" 2>/dev/null | grep -qx "$id"; then
+      printf '%s\t%s\t%s\t%s\t%s\n' "$id" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+        "$(gqpy get "$root/challenge.yaml" track)" "$pts" "$(git rev-parse --short HEAD)" >>"$pf"
+      gq_title "${GQ_GREEN}Desafio $id concluído! +$pts pontos${GQ_RESET} (${elapsed}s)"
+      local a
+      while IFS= read -r a; do [[ -n "$a" ]] && echo "  🏆 Conquista: $a"; done < <(gqpy get "$root/challenge.yaml" achievements)
+    else
+      gq_title "${GQ_GREEN}Todos os critérios satisfeitos.${GQ_RESET} ($id já constava como concluído)"
+    fi
+    local nxt; nxt=$(gqpy get "$root/challenge.yaml" next | paste -sd' ' -)
+    [[ -n "$nxt" ]] && echo "  Próximo(s) recomendado(s): $nxt  →  git add -A && git commit -m 'resolve $id' && ./scripts/gitquest start ${nxt%% *}"
+    return 0
+  fi
+  gq_title "${GQ_RED}Ainda não.${GQ_RESET} Alguns critérios falharam (código $rc)."
+  echo "  Releia a saída acima, ajuste o código e rode novamente."
+  echo "  Dicas: ./scripts/gitquest hints 1"
+  return 1
+}
+
+cmd_hints() {
+  local level=${1:-1} root file max
+  [[ "$level" =~ ^[1-9][0-9]*$ ]] || { gq_error "nível deve ser um número >= 1"; exit 2; }
+  root=$(require_challenge)
+  file="$root/docs/hints.md"
+  [[ -f "$file" ]] || gq_die "Este desafio não possui docs/hints.md"
+  max=$(grep -c '^## Nível ' "$file" || true)
+  ((level > max)) && level=$max
+  awk -v max="$level" '
+    /^## Nível / { split($0, p, " "); n = p[3] + 0; if (n > max) exit; show = 1 }
+    show { print }
+  ' "$file"
+  echo
+  if ((level < max)); then
+    echo "(nível $level de $max — mais ajuda: ./scripts/gitquest hints $((level + 1)))"
+  else
+    echo "(nível $level de $max — último nível de dicas)"
+  fi
+}
+
+cmd_status() {
+  repo_root >/dev/null
+  local br; br=$(current_branch)
+  gq_title "Branch: $br"
+  git status --short --branch | head -20
+  local root; root=$(repo_root)
+  if [[ -f "$root/challenge.yaml" ]]; then
+    echo
+    echo "  Desafio:   $(gqpy get "$root/challenge.yaml" title)"
+    echo "  Nível:     $(gqpy get "$root/challenge.yaml" difficulty) · $(gqpy get "$root/challenge.yaml" estimated_minutes) min · $(gqpy get "$root/challenge.yaml" points) pts"
+    echo "  Editáveis: $(gqpy get "$root/challenge.yaml" editable | paste -sd' ' -)"
+    local touched="" f pat ok
+    local -a pats=()
+    mapfile -t pats < <(gqpy get "$root/challenge.yaml" editable)
+    while IFS= read -r f; do
+      [[ -z "$f" ]] && continue
+      ok=0
+      for pat in "${pats[@]}"; do
+        pat=${pat%/}
+        # shellcheck disable=SC2053  # glob match against editable patterns is intended
+        if [[ "$f" == $pat || "$f" == "$pat"/* ]]; then ok=1; break; fi
+      done
+      ((ok)) || touched+="$f"$'\n'
+    done < <(git -C "$root" diff --name-only HEAD 2>/dev/null; git -C "$root" ls-files --others --exclude-standard)
+    touched=${touched%$'\n'}
+    if [[ -n "$touched" ]]; then
+      gq_warn "arquivos fora do escopo foram alterados — o avaliador usa as versões originais:"
+      while IFS= read -r f; do printf '    %s
+' "$f" >&2; done <<<"$touched"
+    fi
+  fi
+  local pf; pf=$(progress_file)
+  echo
+  if [[ -s "$pf" ]]; then
+    local total count tracks
+    total=$(awk -F'\t' '{s += $4} END {print s + 0}' "$pf")
+    count=$(wc -l <"$pf" | tr -d ' ')
+    tracks=$(cut -f3 "$pf" | sort -u | paste -sd, - | sed 's/,/, /g')
+    echo "  Progresso: $count desafio(s) concluído(s), $total pontos"
+    echo "  Trilhas:   $tracks"
+    (( $(cut -f3 "$pf" | sort -u | wc -l) >= 3 )) && echo "  🏆 Poliglota: concluiu desafios em 3+ trilhas"
+  else
+    echo "  Progresso: nenhum desafio concluído ainda. Comece com: ./scripts/gitquest start desafio-1"
+  fi
+}
+
+cmd_progress() {
+  local flag=${1:-}
+  [[ -z "$flag" || "$flag" == --markdown ]] || { gq_error "uso: gitquest progress [--markdown]"; exit 2; }
+  [[ "$flag" == --markdown ]] || gq_title "Progresso por trilha"
+  gqpy progress "$(catalog_file)" "$(progress_file)" ${flag:+"$flag"}
+}
+
+cmd_validate() {
+  local dir=${1:-$(repo_root)}
+  local br; br=$(git -C "$dir" symbolic-ref --quiet --short HEAD 2>/dev/null || true)
+  gqpy validate "$dir" "$br" && gq_ok "contrato do desafio válido"
+}
+
+main() {
+  local cmd=${1:-help}
+  shift || true
+  case "$cmd" in
+    list) cmd_list "$@" ;;
+    info) cmd_info "$@" ;;
+    start) cmd_start "$@" ;;
+    test) cmd_test "$@" ;;
+    hints) cmd_hints "$@" ;;
+    status) cmd_status "$@" ;;
+    progress) cmd_progress "$@" ;;
+    validate) cmd_validate "$@" ;;
+    help|-h|--help) usage ;;
+    *) gq_error "comando desconhecido: $cmd"; usage >&2; exit 2 ;;
+  esac
+}
+
+main "$@"

@@ -1,0 +1,38 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-21
+title: "O processo que não morria"
+summary: "Consertar o minisup, um supervisor de processos em C17/POSIX que acumula zumbis, trava esperando um pipe que nunca fecha, vaza descritores para os serviços, confunde morte por sinal com sucesso e, no desligamento, perde a saída final, espera para sempre por quem ignora SIGTERM e deixa netos órfãos vivos."
+track: linux
+language: c
+difficulty: intermediate
+
+learning_objectives:
+  - "Criar processos com fork/exec e colher todos os filhos com waitpid(-1, WNOHANG) em laço, inclusive os órfãos adotados como subreaper (PR_SET_CHILD_SUBREAPER)"
+  - "Entender o ciclo de vida de um pipe entre processos: quem precisa fechar cada ponta para o leitor ver EOF"
+  - "Impedir que descritores vazem para programas executados com O_CLOEXEC, pipe2 e o modo 'e' do fopen"
+  - "Decodificar o status de término com WIFEXITED/WEXITSTATUS e WIFSIGNALED/WTERMSIG e transformar isso num código de saída"
+  - "Tratar sinais com handlers async-signal-safe (self-pipe) e fazer o trabalho pesado no laço principal, tratando EINTR"
+  - "Desligar uma árvore de processos com grupos de processos (setpgid, kill com pgid negativo), carência e SIGKILL"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+
+estimated_minutes: 60
+points: 200
+tags: [c, c17, posix, linux, fork, exec, waitpid, zombie, subreaper, pipe, cloexec, signals, self-pipe, process-group, asan]
+prerequisites: []
+next: [desafio-22]
+achievements: ["Ninguém fica para trás"]
+toolchain: "gcc:14.2.0"
+starter_checksum: "sha256:c8d719194baf7084c21fcfef96eb2088fc56de2a74e77ead4a55b826c091c843"
