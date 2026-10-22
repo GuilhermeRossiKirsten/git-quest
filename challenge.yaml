@@ -1,0 +1,38 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-22
+title: "Mensagens pela metade"
+summary: "Consertar um concentrador TCP em Go cujo framing length-prefixed assume que um Read devolve a mensagem inteira, aloca o que o cabeçalho manda, trunca tamanhos acima de 64 KiB, usa deadlines absolutos, não tem backpressure e não fecha as conexões no Close."
+track: network
+language: go
+difficulty: intermediate
+
+learning_objectives:
+  - "Explicar por que TCP é um fluxo de bytes sem fronteiras de mensagem e enquadrar mensagens com prefixo de tamanho"
+  - "Tratar leituras parciais com io.ReadFull e distinguir io.EOF de io.ErrUnexpectedEOF"
+  - "Validar o tamanho anunciado por um cabeçalho antes de alocar memória"
+  - "Definir um formato no fio sem ambiguidade: cabeçalho uint32 big-endian"
+  - "Usar deadlines de net.Conn para idle timeout por frame e write timeout por resposta"
+  - "Aplicar backpressure com fila limitada e um único escritor por conexão"
+  - "Encerrar um servidor TCP fechando conexões e esperando os handlers, sem vazar goroutines"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+
+estimated_minutes: 60
+points: 200
+tags: [go, tcp, framing, length-prefix, io-reader, partial-reads, deadlines, slowloris, backpressure, goroutine-leak, race-detector]
+prerequisites: []
+next: [desafio-23]
+achievements: ["Nenhum byte pela metade"]
+starter_checksum: "sha256:c699765a76a6afd20ea13df2f645bed40f0c5e12feede465c19838adb7eb0e46"
