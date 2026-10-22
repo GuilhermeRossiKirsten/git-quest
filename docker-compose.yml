@@ -1,0 +1,31 @@
+# Ambiente do desafio-24: só o Redis. O código Go (serviço, testes e
+# demonstração) roda em containers descartáveis da imagem de toolchain
+# (Dockerfile), ligados à rede interna abaixo — veja start.sh/test.sh.
+#
+#   docker compose -p gitquest-desafio-24 up -d --wait
+#   docker compose -p gitquest-desafio-24 exec redis redis-cli -n 1 --scan
+name: gitquest-desafio-24
+
+services:
+  redis:
+    image: redis:7.4.2-alpine3.21
+    # Cache puro: sem persistência em disco (nem RDB nem AOF) e sem despejo
+    # de chaves por memória (noeviction), para os testes serem determinísticos.
+    command: ["redis-server", "--save", "", "--appendonly", "no",
+              "--maxmemory", "64mb", "--maxmemory-policy", "noeviction"]
+    # Sem "ports": o Redis não é exposto no host.
+    networks: [internal]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 2s
+    mem_limit: 256m
+    cpus: 1
+
+networks:
+  internal:
+    name: gitquest-desafio-24-net
+    # Rede interna: os containers ligados a ela não acessam a internet.
+    internal: true

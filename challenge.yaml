@@ -1,0 +1,38 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-24
+title: "O cache que mentia"
+summary: "Consertar o cache-aside em Redis de um catálogo de produtos em Go que serve preço antigo depois de uma gravação, deixa uma leitura lenta repovoar o cache com valor velho, manda avalanches de leituras ao banco, expira tudo no mesmo segundo, não cacheia IDs inexistentes, mistura lojas na mesma chave e cai junto com o Redis."
+track: database
+language: go
+difficulty: advanced
+
+learning_objectives:
+  - "Ordenar escrita e invalidação no cache-aside (gravar no banco e depois apagar do cache) e explicar por que invalidar antes de gravar deixa valor velho no cache"
+  - "Impedir que uma leitura lenta iniciada antes de uma gravação repovoe o cache com o valor antigo, usando leases (tokens de preenchimento) ou gravação condicional por versão"
+  - "Evitar o cache stampede coalescendo leituras concorrentes da mesma chave (singleflight com a biblioteca padrão), sem serializar chaves diferentes"
+  - "Espalhar as expirações com TTL e jitter e proteger o banco de consultas a IDs inexistentes com cache negativo de TTL curto"
+  - "Projetar chaves de cache sem colisão (namespace, versão, tenant e escape de texto livre)"
+  - "Tratar o cache como otimização: prazos curtos por comando e degradação para o banco quando o Redis trava ou cai"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - internal/catalog
+
+estimated_minutes: 75
+points: 250
+tags: [go, redis, cache-aside, cache-invalidation, thundering-herd, singleflight, ttl, jitter, negative-caching, docker-compose]
+prerequisites: [desafio-23]
+next: [desafio-25]
+achievements: ["O cache agora diz a verdade"]
+# Gere com: python3 scripts/lib/gq.py checksum .   (depois de finalizar o código inicial)
+starter_checksum: "sha256:676bf37b5ce73c93eda20c64f6b1c66af7938a7b924dc5b0040edaa2c7d51e53"
