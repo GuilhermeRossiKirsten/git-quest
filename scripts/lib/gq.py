@@ -171,7 +171,8 @@ def load_yaml(path):
 # challenge.yaml schema
 # --------------------------------------------------------------------------
 
-TRACKS = ["cpp", "dsa", "go", "docker", "kubernetes", "linux", "network", "database"]
+TRACKS = ["cpp", "dsa", "go", "docker", "kubernetes", "linux", "network", "database",
+          "performance", "compilers", "security", "distributed", "architecture"]
 DIFFICULTIES = ["beginner", "intermediate", "advanced", "expert"]
 STANDARDS = ["cpp11", "cpp14", "cpp17", "cpp20", "cpp23", "cpp26"]
 ENV_TYPES = ["docker", "local", "kind"]
@@ -551,7 +552,7 @@ def progress_report(catalog, done, markdown=False):
         if markdown:
             lines.append(f"| {track} | {n_done}/{len(ch)} | {pts} | {nxt} |")
         else:
-            lines.append(f"  {track:<11} {bar:<8} {n_done}/{len(ch)}  {pts:>4} pts   próximo: {nxt}")
+            lines.append(f"  {track:<12} {bar:<8} {n_done}/{len(ch)}  {pts:>4} pts   próximo: {nxt}")
     summary = f"{len(done)}/{len(items)} desafios, {total_pts}/{max_pts} pontos"
     if markdown:
         lines += ["", f"**Total:** {summary}", "", "## Concluídos", ""]
