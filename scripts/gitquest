@@ -70,14 +70,14 @@ cmd_list() {
   local cat done_ids
   cat=$(catalog_file)
   done_ids=$(cut -f1 "$(progress_file)" 2>/dev/null | sort -u || true)
-  printf '%s%-12s %-11s %-13s %5s %6s  %s%s\n' "$GQ_BOLD" "DESAFIO" "TRILHA" "NÍVEL" "PTS" "MIN" "TÍTULO" "$GQ_RESET"
+  printf '%s%-12s %-12s %-13s %5s %6s  %s%s\n' "$GQ_BOLD" "DESAFIO" "TRILHA" "NÍVEL" "PTS" "MIN" "TÍTULO" "$GQ_RESET"
   local id tr diff pts min status title mark
   while IFS=$'\t' read -r id tr diff pts min status title; do
     [[ -n "$track" && "$tr" != "$track" ]] && continue
     mark=" "
     grep -qx "$id" <<<"$done_ids" && mark="${GQ_GREEN}✔${GQ_RESET}"
     [[ "$status" == planned ]] && title="$title (planejado)"
-    printf '%-12s %-11s %-13s %5s %6s  %s %s\n' "$id" "$tr" "$diff" "$pts" "$min" "$mark" "$title"
+    printf '%-12s %-12s %-13s %5s %6s  %s %s\n' "$id" "$tr" "$diff" "$pts" "$min" "$mark" "$title"
   done < <(gqpy catalog "$cat")
 }
 
