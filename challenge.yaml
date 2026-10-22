@@ -1,0 +1,36 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-25
+title: "Quem pode o quê"
+summary: "Kubernetes: RBAC de menor privilégio e NetworkPolicy deny-by-default."
+track: kubernetes
+language: yaml
+difficulty: advanced
+
+learning_objectives:
+  - "Dar a cada workload uma ServiceAccount própria e reservar a 'default' para pods sem permissão nenhuma"
+  - "Escrever Role e RoleBinding de menor privilégio, com verbos exatos e resourceNames, sem curingas"
+  - "Auditar permissões com kubectl auth can-i --as=system:serviceaccount:<ns>:<sa>, incluindo secrets, pods/exec, escalate e bind"
+  - "Desligar automountServiceAccountToken onde a API do Kubernetes não é usada"
+  - "Isolar o namespace com NetworkPolicy deny-by-default (entrada e saída) sem quebrar o DNS e os fluxos legítimos"
+
+environment:
+  type: kind
+  requires: [docker, kind, kubectl]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 420
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - k8s
+
+estimated_minutes: 75
+points: 250
+tags: [kubernetes, kind, kubectl, rbac, serviceaccount, networkpolicy, least-privilege, security]
+prerequisites: [desafio-19]
+next: []
+achievements: ["Guardião do Namespace"]
+starter_checksum: "sha256:3770fbe27b044fd834c050c57c7612ccbc1e79649103430f2610a99ae4c35da4"

@@ -1,0 +1,32 @@
+# Configuração da loja. O avaliador espera estes nomes.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+  labels:
+    app.kubernetes.io/part-of: shop
+type: Opaque
+stringData:
+  # Senha de laboratório (só existe dentro do namespace desafio-25).
+  password: pedidos-lab-2024
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  labels:
+    app.kubernetes.io/part-of: shop
+data:
+  SHOP_TITLE: "Loja GitQuest"
+---
+# Relatório escrito pelo job de manutenção a cada execução.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: maintenance-report
+  labels:
+    app.kubernetes.io/part-of: shop
+data:
+  lastRunBy: ""
+  lastRunAt: ""
+  pods: ""

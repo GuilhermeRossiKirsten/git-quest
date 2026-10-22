@@ -1,0 +1,43 @@
+# Job de manutenção: confere quais pods da loja estão prontos e grava o
+# resumo no ConfigMap maintenance-report (veja app/main.go, runMaintenance).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: maintenance
+  labels:
+    app.kubernetes.io/name: maintenance
+    app.kubernetes.io/part-of: shop
+spec:
+  schedule: "*/10 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 60
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: maintenance
+            app.kubernetes.io/part-of: shop
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+          containers:
+            - name: maintenance
+              image: gitquest/desafio-25-shop:1.0.0
+              imagePullPolicy: IfNotPresent
+              args: ["maintenance"]
+              env:
+                - name: REPORT_CONFIGMAP
+                  value: maintenance-report
+              resources:
+                requests: {cpu: 10m, memory: 16Mi}
+                limits: {memory: 64Mi}
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]

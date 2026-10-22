@@ -1,0 +1,28 @@
+# Permissões do job de manutenção.
+# "O job dava 403 ao gravar o relatório. Liberamos tudo no namespace e
+#  ligamos à conta padrão, que é a que os pods já usam." (chamado #4127)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: maintenance
+  labels:
+    app.kubernetes.io/part-of: shop
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: maintenance
+  labels:
+    app.kubernetes.io/part-of: shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: maintenance
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: desafio-25
