@@ -44,8 +44,8 @@ done
 [[ -n "$title" ]] || gq_die "--title é obrigatório"
 [[ "$title" != *'"'* ]] || gq_die "--title não pode conter aspas duplas"
 case "$language" in
-  cpp|go|bash|python|yaml|sql) ;;
-  *) gq_die "--language deve ser um de: cpp go bash python yaml sql" ;;
+  c|cpp|go|bash|python|yaml|sql|dockerfile) ;;
+  *) gq_die "--language deve ser um de: c cpp go bash python yaml sql dockerfile" ;;
 esac
 case "$difficulty" in
   beginner|intermediate|advanced|expert) ;;
