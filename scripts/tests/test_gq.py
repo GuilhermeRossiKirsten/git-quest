@@ -172,6 +172,9 @@ class TreeTest(unittest.TestCase):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf-8", newline="\n") as fh:
             fh.write(text)
+        if rel.endswith(".sh"):
+            # Real exec bit too: with core.filemode=true (Linux), `git add` re-reads it.
+            os.chmod(path, 0o755)
 
     def errors(self):
         subprocess.run(["git", "-C", self.dir, "add", "-A"], check=True)

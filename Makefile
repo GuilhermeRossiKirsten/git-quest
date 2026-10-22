@@ -24,7 +24,9 @@ lint:
 	else echo "shellcheck não instalado"; fi
 
 selftest:
-	@python3 -m unittest discover -s scripts/tests -v 2>&1 || python -m unittest discover -s scripts/tests -v
+	@py=$$(for p in python3 python; do $$p -c '' 2>/dev/null && { echo $$p; break; }; done); \
+		[ -n "$$py" ] || { echo "Python >= 3.8 não encontrado" >&2; exit 1; }; \
+		$$py -m unittest discover -s scripts/tests -v
 
 sync-tooling:
 	@./scripts/sync-tooling.sh
