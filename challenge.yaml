@@ -1,0 +1,40 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-23
+title: "A consulta que varria a tabela"
+summary: "SQL: índices, EXPLAIN ANALYZE e paginação por keyset no PostgreSQL."
+track: database
+language: sql
+difficulty: intermediate
+
+learning_objectives:
+  - "Ler planos de EXPLAIN (ANALYZE, BUFFERS) e medir o custo de uma consulta em buffers, não só em tempo"
+  - "Escrever predicados sargable: tirar funções da coluna ou indexar exatamente a expressão usada (índice de expressão)"
+  - "Projetar índices compostos e parciais na ordem certa para filtro + ORDER BY + LIMIT"
+  - "Usar LIKE 'prefixo%' com índice (collation C ou text_pattern_ops) e escapar os curingas do texto digitado"
+  - "Trocar paginação por OFFSET por paginação por keyset com cursor (created_at, id), estável sob escritas"
+  - "Corrigir a semântica de NOT IN com NULL e da precedência AND/OR, preferindo NOT EXISTS (anti-join)"
+  - "Manter o conjunto de índices enxuto: cada índice serve a uma consulta e tem custo de espaço e escrita"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 600
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - sql/indexes.sql
+  - sql/queries
+
+estimated_minutes: 60
+points: 200
+tags: [sql, postgresql, indexes, explain-analyze, keyset-pagination, sargable, query-plans, docker-compose]
+prerequisites: []
+next: [desafio-24]
+achievements: ["Nada de Seq Scan"]
+# Gere com: python3 scripts/lib/gq.py checksum .   (depois de finalizar o código inicial)
+starter_checksum: "sha256:6669468ee7341e7f77d9ff10d7764b94970d078bed0985841af2a5d4a138de78"

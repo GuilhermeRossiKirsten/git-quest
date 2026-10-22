@@ -1,0 +1,47 @@
+# Ambiente do desafio-23: um único PostgreSQL 16. O diretório do desafio é
+# montado SOMENTE LEITURA em /challenge: o seed (db/), os seus arquivos (sql/)
+# e o avaliador (tests/) são lidos e executados com o psql de dentro do container.
+#
+#   docker compose -p gitquest-desafio-23 up -d --wait
+#   docker compose -p gitquest-desafio-23 exec postgres psql -U gitquest -d shop
+name: gitquest-desafio-23
+
+services:
+  postgres:
+    image: postgres:16.4-alpine3.20
+    environment:
+      POSTGRES_USER: gitquest
+      # Banco descartável, acessível apenas pela rede interna do compose.
+      POSTGRES_PASSWORD: gitquest
+      POSTGRES_DB: postgres
+    # Banco de laboratório: durabilidade relaxada para o seed e os testes serem
+    # rápidos (nunca use fsync=off em produção). Paralelismo e JIT desligados
+    # para que planos e contagens de buffers sejam determinísticos. O "dia" do
+    # negócio é o dia civil de São Paulo: é o fuso padrão das sessões.
+    command: ["postgres",
+              "-c", "fsync=off", "-c", "synchronous_commit=off", "-c", "full_page_writes=off",
+              "-c", "max_parallel_workers_per_gather=0", "-c", "jit=off",
+              "-c", "timezone=America/Sao_Paulo"]
+    # Sem "ports": o PostgreSQL não é exposto no host.
+    networks: [internal]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./:/challenge:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gitquest -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    mem_limit: 1g
+    cpus: 2
+
+networks:
+  internal:
+    name: gitquest-desafio-23-net
+    # Rede interna: o container não acessa a internet.
+    internal: true
+
+volumes:
+  pgdata:
+    name: gitquest-desafio-23-pgdata

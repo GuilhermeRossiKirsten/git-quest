@@ -1,0 +1,55 @@
+# Valida uma branch desafio-N. Este arquivo é mantido na main e copiado para
+# cada branch por scripts/sync-tooling.sh.
+#
+# Segurança: o código de desafios é tratado como não confiável. O workflow usa
+# somente 'pull_request' (nunca 'pull_request_target'), permissões de leitura
+# e nenhum secret.
+name: validate-challenge
+
+on:
+  push:
+    branches: ['desafio-*']
+  pull_request:
+    branches: ['desafio-*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Contrato (challenge.yaml, README, scripts, Dockerfiles, segredos)
+        env:
+          GITQUEST_BRANCH: ${{ github.base_ref || github.ref_name }}
+        run: |
+          sudo apt-get install -y --no-install-recommends shellcheck >/dev/null
+          ./scripts/validate-branch.sh --contract-only
+      - name: Ferramentas compartilhadas iguais às da main
+        run: |
+          git fetch --depth=1 origin main
+          drift=0
+          while IFS= read -r f; do
+            case "$f" in ''|'#'*) continue ;; esac
+            git diff --quiet FETCH_HEAD -- "$f" || { echo "::error file=$f::difere da main — rode scripts/sync-tooling.sh"; drift=1; }
+          done < <(git show FETCH_HEAD:config/shared-files.txt)
+          exit $drift
+
+  tests:
+    needs: contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      # validate-branch.sh decide o resultado esperado: código inicial intocado
+      # deve REPROVAR; código modificado (solução) deve PASSAR.
+      - name: Testes do desafio
+        env:
+          GITQUEST_BRANCH: ${{ github.base_ref || github.ref_name }}
+        run: ./scripts/validate-branch.sh
