@@ -85,9 +85,25 @@ Redes         desafio-22 (framing sobre TCP)
 |---|---|---|
 | `desafio-22` | Mensagens pela metade | framing length-prefix sobre TCP, leituras parciais (`io.ReadFull`), limite de frame, deadlines por operação, backpressure, encerramento sem vazar goroutines |
 
-## Roteiro e áreas ainda sem desafios
+## Roteiro (em construção)
 
-Todos os desafios do catálogo estão disponíveis. Próximas áreas candidatas:
+| Desafio | Trilha | Título |
+|---|---|---|
+| `desafio-26` | cpp | A arena que não devolvia |
+| `desafio-27` | cpp | Só compila na minha máquina |
+| `desafio-28` | cpp | O switch que crescia |
+| `desafio-29` | cpp | Metros mais segundos |
+| `desafio-30` | performance | Dados que não cabiam no cache |
+| `desafio-31` | compilers | A precedência esquecida |
+| `desafio-32` | security | A entrada que virou código |
+| `desafio-33` | cpp | A fila sem trava que travava |
+| `desafio-34` | architecture | A API que quebrava os clientes |
+| `desafio-35` | distributed | Relógios que discordavam |
+| `desafio-36` | architecture | O pedido que aceitava tudo |
+
+## Áreas ainda sem desafios
+
+Candidatas:
 
 Mensageria (Kafka/RabbitMQ), DDD e Clean Architecture, isolamento de transações e
 deadlocks, Helm/Kustomize/HPA, profiling e benchmarks em Go, CMake e linking, e C++26

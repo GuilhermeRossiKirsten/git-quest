@@ -33,7 +33,7 @@ Arquivos opcionais só existem quando o desafio precisa deles. Nenhum arquivo va
 | `id` | string | sim | `desafio-N`, igual ao nome da branch |
 | `title` | string | sim | igual ao catálogo |
 | `summary` | string | sim | uma frase |
-| `track` | string | sim | `cpp`, `dsa`, `go`, `docker`, `kubernetes`, `linux`, `network`, `database` |
+| `track` | string | sim | `cpp`, `dsa`, `go`, `docker`, `kubernetes`, `linux`, `network`, `database`, `performance`, `compilers`, `security`, `distributed`, `architecture` |
 | `language` | string | sim | linguagem principal (`c`, `cpp`, `go`, `sql`, `yaml`, `dockerfile`...) |
 | `standard` | string | se C++ | `cpp11`, `cpp14`, `cpp17`, `cpp20`, `cpp23`, `cpp26` |
 | `toolchain` | string | se C++ | imagem/compilador exato, ex.: `gcc:14.2.0` |
