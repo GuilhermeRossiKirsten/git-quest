@@ -213,14 +213,14 @@ challenges:
     prerequisites: [desafio-9]
     summary: "Arquitetura: idempotência de consumidores e outbox pattern com PostgreSQL."
 
-  # --- Roteiro (planejados) --------------------------------------------------
+  # --- Terceira leva ----------------------------------------------------------
   - id: desafio-21
     title: "O processo que não morria"
     track: linux
     difficulty: intermediate
     points: 200
     estimated_minutes: 60
-    status: planned
+    status: available
     prerequisites: []
     summary: "Linux: fork/exec, sinais, processos zumbis, pipes e file descriptors herdados num supervisor de processos."
 
@@ -230,7 +230,7 @@ challenges:
     difficulty: intermediate
     points: 200
     estimated_minutes: 60
-    status: planned
+    status: available
     prerequisites: []
     summary: "Redes: framing de mensagens sobre TCP (length-prefix), leituras parciais, timeouts e backpressure."
 
@@ -240,7 +240,7 @@ challenges:
     difficulty: intermediate
     points: 200
     estimated_minutes: 60
-    status: planned
+    status: available
     prerequisites: []
     summary: "SQL: índices, EXPLAIN ANALYZE e paginação por keyset no PostgreSQL."
 
@@ -250,7 +250,7 @@ challenges:
     difficulty: advanced
     points: 250
     estimated_minutes: 75
-    status: planned
+    status: available
     prerequisites: [desafio-23]
     summary: "Redis: cache-aside, invalidação, stampede e TTL com jitter."
 
@@ -260,6 +260,6 @@ challenges:
     difficulty: advanced
     points: 250
     estimated_minutes: 75
-    status: planned
+    status: available
     prerequisites: [desafio-19]
     summary: "Kubernetes: RBAC de menor privilégio e NetworkPolicy deny-by-default."

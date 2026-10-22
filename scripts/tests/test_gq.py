@@ -184,6 +184,13 @@ class TreeTest(unittest.TestCase):
         self.write("Dockerfile", "FROM golang AS build\nFROM alpine:latest\n")
         self.assertEqual(len([e for e in self.errors() if "sem versão fixada" in e]), 2)
 
+    def test_unpinned_compose_image(self):
+        self.write("docker-compose.yml", "services:\n  db:\n    image: postgres:16.4-alpine3.20\n"
+                   "  cache:\n    image: \"redis\"\n  web:\n    image: nginx:latest\n")
+        bad = [e for e in self.errors() if "sem versão fixada" in e]
+        self.assertEqual(len(bad), 2)
+        self.assertTrue(all("docker-compose.yml" in e for e in bad))
+
     def test_missing_readme_section_and_hints(self):
         self.write("README.md", "# x\n\n## Contexto\n")
         self.write("docs/hints.md", "# Dicas\n\n## Nível 2\n")

@@ -13,7 +13,7 @@ main ─────────── catálogo, documentação, CLI, validador
 desafio-1 ────── C++11 · O vazamento silencioso
 desafio-2 ────── C++14 · Lambdas sem fronteiras
 ...
-desafio-20 ───── Banco de dados · O consumidor que processava duas vezes
+desafio-25 ───── Kubernetes · Quem pode o quê
 ```
 
 ## Começo rápido
@@ -36,7 +36,7 @@ git add -A && git commit -m "resolve desafio-1"
 ```
 
 Requisitos mínimos: Git >= 2.23, Bash >= 4 e Python >= 3.8 (só biblioteca padrão).
-Os toolchains (GCC 14.2, Go 1.25, PostgreSQL 16, Kind) rodam em containers com versões fixadas, então o
+Os toolchains (GCC 14.2, Go 1.25, PostgreSQL 16, Redis 7.4, Kind) rodam em containers com versões fixadas, então o
 **Docker** é o único requisito pesado. Windows: use **WSL2** (recomendado) ou Git Bash —
 veja [docs/getting-started.md](docs/getting-started.md).
 
@@ -64,6 +64,11 @@ veja [docs/getting-started.md](docs/getting-started.md).
 | `desafio-18` | Kubernetes | intermediário | liveness, readiness e startup probes |
 | `desafio-19` | Kubernetes | avançado | rollout sem indisponibilidade e rollback |
 | `desafio-20` | Banco de dados | avançado | outbox, consumidor idempotente, PostgreSQL |
+| `desafio-21` | Linux (C17) | intermediário | fork/exec, sinais, zumbis, pipes, FDs herdados |
+| `desafio-22` | Redes (Go) | intermediário | framing sobre TCP, leituras parciais, backpressure |
+| `desafio-23` | Banco de dados (SQL) | intermediário | índices, `EXPLAIN`, paginação por keyset |
+| `desafio-24` | Banco de dados (Go) | avançado | cache-aside em Redis, stampede, TTL com jitter |
+| `desafio-25` | Kubernetes | avançado | RBAC de menor privilégio, NetworkPolicy |
 
 Catálogo completo, trilhas e roteiro: [docs/challenge-catalog.md](docs/challenge-catalog.md).
 Os desafios não exigem ordem linear; os pré-requisitos são explícitos.

@@ -34,7 +34,7 @@ Arquivos opcionais só existem quando o desafio precisa deles. Nenhum arquivo va
 | `title` | string | sim | igual ao catálogo |
 | `summary` | string | sim | uma frase |
 | `track` | string | sim | `cpp`, `dsa`, `go`, `docker`, `kubernetes`, `linux`, `network`, `database` |
-| `language` | string | sim | linguagem principal (`cpp`, `go`, `yaml`, `dockerfile`...) |
+| `language` | string | sim | linguagem principal (`c`, `cpp`, `go`, `sql`, `yaml`, `dockerfile`...) |
 | `standard` | string | se C++ | `cpp11`, `cpp14`, `cpp17`, `cpp20`, `cpp23`, `cpp26` |
 | `toolchain` | string | se C++ | imagem/compilador exato, ex.: `gcc:14.2.0` |
 | `difficulty` | string | sim | `beginner`, `intermediate`, `advanced`, `expert` |

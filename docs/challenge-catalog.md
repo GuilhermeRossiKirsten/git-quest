@@ -16,8 +16,11 @@ C++           desafio-1 ──┬──► desafio-2 ──► desafio-4 ──�
 Estruturas    desafio-6        desafio-14 ──► desafio-15 ──► desafio-16
 Go            desafio-7 ──► desafio-8 ──► desafio-17
 Docker/K8s    desafio-9 ──► desafio-10 ──┬──► desafio-18 (probes)
-                                         └──► desafio-19 (rollout)
+                                         └──► desafio-19 (rollout) ──► desafio-25 (RBAC/NetworkPolicy)
 Banco/Arq.    desafio-9 ──► desafio-20 (outbox e idempotência)
+              desafio-23 (índices) ──► desafio-24 (cache Redis)
+Linux         desafio-21 (processos e sinais)
+Redes         desafio-22 (framing sobre TCP)
 ```
 
 ## Disponíveis
@@ -60,24 +63,31 @@ Banco/Arq.    desafio-9 ──► desafio-20 (outbox e idempotência)
 | `desafio-10` | O Deployment que nunca ficou pronto | `kubectl describe/logs/events`, ImagePullBackOff, CrashLoopBackOff, OOMKilled, probes, selectors de Service, requests/limits, securityContext |
 | `desafio-18` | Probes que mentem | liveness × readiness × startup probes, warmup lento, dependência fora do ar sem reinícios em cascata |
 | `desafio-19` | Rollout e rollback | RollingUpdate sem indisponibilidade, `minReadySeconds`, `progressDeadlineSeconds`, histórico de revisões, PodDisruptionBudget |
+| `desafio-25` | Quem pode o quê | RBAC de menor privilégio (`kubectl auth can-i`, `resourceNames`), ServiceAccounts dedicadas, `automountServiceAccountToken`, NetworkPolicy deny-by-default com DNS liberado |
 
 ### Trilha Bancos de Dados e Arquitetura
 
 | Desafio | Título | Você vai aprender |
 |---|---|---|
 | `desafio-20` | O consumidor que processava duas vezes | consumidor idempotente, transactional outbox, escrita dupla, `INSERT ... ON CONFLICT`, UPDATE atômico, PostgreSQL real via Compose |
+| `desafio-23` | A consulta que varria a tabela | índices compostos, parciais e de expressão, consultas sargable, `EXPLAIN (ANALYZE, BUFFERS)`, paginação por keyset, `NOT IN` com NULL |
+| `desafio-24` | O cache que mentia | cache-aside em Redis, invalidação e a corrida de repovoamento (leases), stampede, TTL com jitter, cache negativo, degradação com Redis fora |
 
-## Roteiro (planejados)
+### Trilha Linux
 
-| Desafio | Trilha | Título |
+| Desafio | Título | Você vai aprender |
 |---|---|---|
-| `desafio-21` | Linux | O processo que não morria |
-| `desafio-22` | Redes | Mensagens pela metade |
-| `desafio-23` | Bancos de dados | A consulta que varria a tabela |
-| `desafio-24` | Bancos de dados | O cache que mentia |
-| `desafio-25` | Kubernetes | Quem pode o quê |
+| `desafio-21` | O processo que não morria | `fork`/`exec`, `waitpid` e zumbis, subreaper, pipes e EOF, `O_CLOEXEC`, sinais com self-pipe, grupos de processos (C17) |
 
-## Áreas ainda sem desafios
+### Trilha Redes
+
+| Desafio | Título | Você vai aprender |
+|---|---|---|
+| `desafio-22` | Mensagens pela metade | framing length-prefix sobre TCP, leituras parciais (`io.ReadFull`), limite de frame, deadlines por operação, backpressure, encerramento sem vazar goroutines |
+
+## Roteiro e áreas ainda sem desafios
+
+Todos os desafios do catálogo estão disponíveis. Próximas áreas candidatas:
 
 Mensageria (Kafka/RabbitMQ), DDD e Clean Architecture, isolamento de transações e
 deadlocks, Helm/Kustomize/HPA, profiling e benchmarks em Go, CMake e linking, e C++26
