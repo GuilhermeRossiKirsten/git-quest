@@ -60,7 +60,7 @@ if [[ -z "$track" ]]; then
   case "$language" in cpp) track=cpp ;; go) track=go ;; *) gq_die "informe --track para a linguagem $language" ;; esac
 fi
 case "$track" in
-  cpp|dsa|go|docker|kubernetes|linux|network|database) ;;
+  cpp|dsa|go|docker|kubernetes|linux|network|database|performance|compilers|security|distributed|architecture) ;;  # = TRACKS em lib/gq.py
   *) gq_die "--track inválida: $track" ;;
 esac
 
