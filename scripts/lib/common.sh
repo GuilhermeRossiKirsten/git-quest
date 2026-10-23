@@ -131,13 +131,21 @@ gq_docker_run() {
   local -a tty=() extra=()
   [[ -t 1 ]] && tty=(-t)
   if declare -p GQ_DOCKER_EXTRA >/dev/null 2>&1; then extra=("${GQ_DOCKER_EXTRA[@]}"); fi
+  local ref rc=0
+  ref=$(mktemp)
   MSYS_NO_PATHCONV=1 docker run --rm "${tty[@]}" --user "$user" "${extra[@]}" \
     --network "${GQ_DOCKER_NETWORK:-none}" \
     --cpus "${GQ_CPUS:-2}" --memory "${GQ_MEMORY:-2g}" --pids-limit 512 \
     --cap-add SYS_PTRACE \
     -e HOME=/tmp -e NO_COLOR="${NO_COLOR:-}" \
     -v "$(gq_host_pwd)":/work -w /work \
-    "$image" timeout --kill-after=10 "$timeout" "$@"
+    "$image" timeout --kill-after=10 "$timeout" "$@" || rc=$?
+  # The Docker Desktop / WSL2 VM clock can run tens of seconds ahead of the host.
+  # Files the container wrote would then look newer than an edit made right after,
+  # and make/ninja would skip rebuilding it. Restamp them with host time.
+  find . -path ./.git -prune -o -newer "$ref" -print0 2>/dev/null | xargs -0 -r touch -c 2>/dev/null || true
+  rm -f "$ref"
+  return "$rc"
 }
 
 gq_banner_next_steps() {
