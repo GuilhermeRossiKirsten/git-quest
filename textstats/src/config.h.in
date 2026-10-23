@@ -1,0 +1,5 @@
+// Gerado a partir de src/config.h.in. Não edite o config.h gerado: edite o modelo.
+#pragma once
+
+#define TEXTSTATS_VERSION "@TEXTSTATS_VERSION@"
+#define TEXTSTATS_BUILD_STAMP "@TEXTSTATS_BUILD_STAMP@"

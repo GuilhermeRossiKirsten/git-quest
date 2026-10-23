@@ -1,0 +1,44 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-27
+title: "Só compila na minha máquina"
+summary: "CMake moderno: targets, PUBLIC/PRIVATE/INTERFACE, install/export e find_package num projeto que só compila no diretório do autor."
+track: cpp
+language: cmake
+toolchain: "gcc:14.2.0 + CMake 3.31.6 + Ninja 1.12.1"
+difficulty: intermediate
+
+learning_objectives:
+  - "Trocar configuração global (include_directories, CMAKE_CXX_FLAGS) por requisitos de uso em targets com PUBLIC/PRIVATE/INTERFACE"
+  - "Fazer builds fora da árvore que funcionam em qualquer caminho e geram arquivos só no diretório de build"
+  - "Declarar dependências transitivas e o padrão de C++ como requisitos (target_link_libraries, target_compile_features)"
+  - "Instalar e exportar a biblioteca como pacote CMake relocável, consumível com find_package(CONFIG) e um alvo com namespace"
+  - "Manter headers internos e flags de warning privados ao projeto"
+  - "Suportar BUILD_SHARED_LIBS e builds incrementais corretos (no-op e recompilação mínima)"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - textstats/CMakeLists.txt
+  - textstats/src/CMakeLists.txt
+  - textstats/app/CMakeLists.txt
+  - textstats/test/CMakeLists.txt
+  - textstats/src/config.h.in
+  - textstats/cmake
+
+estimated_minutes: 60
+points: 200
+tags: [cmake, modern-cmake, targets, usage-requirements, install, export, find-package, shared-libraries]
+prerequisites: [desafio-1]
+next: [desafio-28]
+achievements: ["Funciona em qualquer máquina"]
+# Gerado com: python3 scripts/lib/gq.py checksum .   (identifica o código inicial intocado)
+starter_checksum: "sha256:9a70b44a1fdffba948a7e6ddfea4ee8a059f04476e1405272c1e1cdf8c0dda25"

@@ -1,0 +1,3 @@
+add_executable(textstats_tests test_textstats.cpp)
+target_link_libraries(textstats_tests textstats utf8)
+add_test(NAME textstats_tests COMMAND textstats_tests)
