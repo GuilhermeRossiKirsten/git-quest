@@ -1,0 +1,41 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-30
+title: "Dados que não cabiam no cache"
+summary: "Painel de vendas em C++20 que dá as respostas certas, mas com um layout que desperdiça a cache: reorganizar os dados (AoS → SoA, sem indireção, sem nós espalhados, matriz percorrida na ordem certa) e provar o ganho com contagens determinísticas de misses do Valgrind."
+track: performance
+language: cpp
+standard: cpp20
+toolchain: "gcc:14.2.0"
+difficulty: advanced
+
+learning_objectives:
+  - "Explicar por que só as linhas de cache tocadas importam e medir misses de D1/LL de forma reprodutível com o simulador de cache do Valgrind"
+  - "Separar dados quentes de frios (array of structs gordo → structure of arrays ou struct quente compacta)"
+  - "Eliminar indireção por ponteiro (vector<unique_ptr<T>>) e listas ligadas com nós espalhados no heap"
+  - "Percorrer uma matriz na ordem em que ela está na memória (passo 1) em vez de coluna por coluna"
+  - "Trocar um contêiner baseado em nós (std::map) por um vetor ordenado quando os dados são lidos muito mais do que escritos"
+  - "Otimizar sem mudar a API nem os resultados, conferindo cada resposta contra um gabarito"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src/sales_store.h
+  - src/sales_store.cpp
+
+estimated_minutes: 75
+points: 250
+tags: [cpp20, performance, cache, data-oriented-design, soa, aos, valgrind, cachegrind, callgrind, memory-hierarchy]
+prerequisites: [desafio-14]
+next: [desafio-33]
+achievements: ["Linha de cache bem aproveitada"]
+# Gerado com: python3 scripts/lib/gq.py checksum .   (identifica o código inicial intocado)
+starter_checksum: "sha256:30c95029487b07bfae9264937c133ee9962c3d435a7712d40b9290de0de8e276"

@@ -1,0 +1,30 @@
+# Limites da medição de cache (tests/perf.sh). NÃO edite.
+#
+# Medidos com o simulador de cache do Valgrind 3.19 (callgrind --cache-sim=yes)
+# na toolchain gcc:14.2.0 (linux/amd64), cache simulada fixa:
+#   I1 = D1 = 32 KiB, 8 vias, linha de 64 B;  LL = 2 MiB, 16 vias, linha de 64 B.
+# Os números são determinísticos: mesma imagem + mesmo código => mesmos números.
+#
+# Regra das consultas: misses <= min(40% do código inicial, 2x uma solução de
+# referência simples, com uma struct "quente" compacta); Ir <= 1,5x o código
+# inicial (reorganizar os dados não deveria exigir mais instruções).
+# Ingestão: <= 2x o código inicial (impede "pré-calcular tudo na ingestão" e
+# não pune vetores que crescem).
+# LL de units_by_day e basket_value não é critério: lá todo layout lê os mesmos
+# dados do LL (só o L1 muda), então o número aparece apenas como informação.
+#
+# região          métrica  limite      inicial     referência (SoA)
+ingest            Ir       266867000   133433677   118688241
+ingest            D1       4689000     2344981     2857100
+revenue           Ir       6229000     4152699     5040073
+revenue           D1       180000      632681      50638
+revenue           LL       60000       632679      16879
+units_by_day      Ir       6380000     4253514     2375418
+units_by_day      D1       119000      406950      59666
+units_by_day      LL       -           52801       52257
+refunded_cents    Ir       1499000     999591      999595
+refunded_cents    D1       60000       159794      30033
+refunded_cents    LL       15000       136356      7508
+basket_value      Ir       32188000    21459322    25387293
+basket_value      D1       520000      1302292     142332
+basket_value      LL       -           30968       25758
