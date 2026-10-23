@@ -13,6 +13,12 @@ inválidos de memória, containers defeituosos. As regras abaixo valem para todo
   e `timeout` dentro do container para todo comando.
 - **`SYS_PTRACE`** é a única capability adicionada, necessária para o LeakSanitizer
   (ele usa ptrace para suspender threads). Ela vale apenas dentro do container do teste.
+- **seccomp**: desafios com ThreadSanitizer (`setarch -R`) usam
+  `scripts/lib/seccomp-tsan.json` via `gq_seccomp_tsan`: é o perfil padrão do Docker
+  (moby v28.3.3, sha256 `01536f1d…8301e28` do original) com **uma** regra a mais,
+  `personality(PER_LINUX|ADDR_NO_RANDOMIZE)`. Nunca `seccomp=unconfined` nem `--privileged`.
+  Atenção: o Docker Desktop roda containers sem seccomp por padrão, então algo que funciona
+  nele pode falhar no Docker Engine do Linux e na CI — teste nos dois.
 - **Escopo de arquivos**: o container monta somente o diretório do desafio em `/work`.
   Scripts nunca removem nada fora do próprio diretório (ex.: `build/`, `.tools/`).
 - **Socket do Docker nunca é montado** em containers de desafio. Desafios de Docker e

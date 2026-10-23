@@ -7,5 +7,6 @@
 scripts/gitquest
 scripts/lib/common.sh
 scripts/lib/gq.py
+scripts/lib/seccomp-tsan.json
 scripts/validate-branch.sh
 scripts/check-environment.sh
