@@ -1,0 +1,37 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-34
+title: "A API que quebrava os clientes"
+summary: "Consertar uma API HTTP JSON em Go que quebrou o cliente v1 do parceiro ao renomear campos, pagina por offset, perde atualizações concorrentes, duplica pedidos em retentativas e responde todo erro como 500 text/plain."
+track: architecture
+language: go
+difficulty: intermediate
+
+learning_objectives:
+  - "Evoluir uma API com mudanças aditivas, sem quebrar clientes antigos que não podem ser atualizados"
+  - "Paginar coleções que mudam com cursor opaco e link next, sem repetir nem pular itens"
+  - "Evitar lost updates com ETag forte, If-Match, 412 e 428 sobre gravação condicional atômica"
+  - "Tornar POST seguro para retentativas com Idempotency-Key, inclusive sob concorrência"
+  - "Reportar erros com Problem Details (RFC 9457) e os códigos HTTP corretos"
+  - "Implementar GET condicional com If-None-Match e 304"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src/api
+
+estimated_minutes: 60
+points: 200
+tags: [go, http, api-design, rest, pagination, cursor, etag, if-match, conditional-request, idempotency-key, problem-details, backward-compatibility, race-detector]
+prerequisites: [desafio-17]
+next: [desafio-36]
+achievements: ["Contrato é contrato"]
+starter_checksum: "sha256:2f9b002a2914bc8287912e4e4dda153eecd2d12733507bf30fcbf6448dc0327a"
