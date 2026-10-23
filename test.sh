@@ -24,7 +24,8 @@ fi
 IMAGE=$(gq_toolchain_image desafio-13 Dockerfile)
 gq_require_docker
 gq_docker_ensure_image "$IMAGE" Dockerfile
-# Sem flags extras: o TSan roda com `setarch -R` (veja tests/run.sh), que o perfil
-# seccomp padrão do Docker permite; os limites de CPU/memória/PIDs continuam valendo.
-GQ_DOCKER_EXTRA=(-e "GQ_VERBOSE=${GQ_VERBOSE:-0}")
+# O TSan roda com `setarch -R` (veja tests/run.sh). O perfil seccomp padrão do Docker
+# Engine bloqueia essa chamada; gq_seccomp_tsan usa o padrão + só personality(ADDR_NO_RANDOMIZE).
+# Os limites de CPU/memória/PIDs continuam valendo.
+GQ_DOCKER_EXTRA=(--security-opt "$(gq_seccomp_tsan)" -e "GQ_VERBOSE=${GQ_VERBOSE:-0}")
 gq_docker_run "$IMAGE" 280 make --no-print-directory test

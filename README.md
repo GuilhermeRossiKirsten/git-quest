@@ -62,7 +62,9 @@ Veja também [docs/learning-objectives.md](docs/learning-objectives.md).
 - O ThreadSanitizer do gcc 14 não inicia em kernels com randomização de endereços agressiva
   (WSL2, Ubuntu 24.04: `FATAL: ThreadSanitizer: unexpected memory mapping`). Por isso os
   testes TSan rodam sob `setarch "$(uname -m)" -R`, que desliga a randomização só para o
-  processo do teste; o perfil seccomp padrão do Docker permite isso, nenhuma flag extra é usada.
+  processo do teste. O perfil seccomp padrão do Docker Engine bloqueia essa chamada, então o
+  `test.sh` usa `scripts/lib/seccomp-tsan.json`: o perfil padrão com uma única regra a mais
+  (`personality(ADDR_NO_RANDOMIZE)`) — nada de `seccomp=unconfined` (veja docs/security.md no main).
 - Sem Docker (somente Linux, g++ >= 14, `make` e `setarch` do util-linux):
   `GITQUEST_LOCAL=1 ./start.sh` e `GITQUEST_LOCAL=1 ./test.sh`.
 
