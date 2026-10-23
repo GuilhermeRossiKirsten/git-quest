@@ -1,0 +1,40 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-29
+title: "Metros mais segundos"
+summary: "Uma biblioteca header-only de grandezas físicas promete que somar metros com segundos não compila, mas conversões implícitas, metafunções de dimensão erradas e uma escala guardada em tempo de execução deixam passar o erro do Mars Climate Orbiter; torne-a type-safe, constexpr e de custo zero."
+track: cpp
+language: cpp
+standard: cpp20
+toolchain: "gcc:14.2.0"
+difficulty: advanced
+
+learning_objectives:
+  - "Codificar dimensões físicas no tipo com parâmetros de template não-tipo (Dim<L, M, T>)"
+  - "Escrever metafunções que calculam a dimensão de produtos e quocientes em tempo de compilação"
+  - "Eliminar conversões implícitas indesejadas (construtores explicit, operadores de conversão, construtores-template)"
+  - "Garantir abstração de custo zero: sizeof igual ao da representação, cópia trivial e constexpr"
+  - "Definir literais definidos pelo usuário corretos (_m, _km, _s, _kg, _lbf)"
+  - "Verificar que usos inválidos não compilam pelo motivo certo"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+
+estimated_minutes: 75
+points: 250
+tags: [cpp20, template-metaprogramming, nttp, type-traits, constexpr, user-defined-literals, units]
+prerequisites: [desafio-4]
+next: []
+achievements: ["Navegador do Orbitador"]
+# Gerado com: python3 scripts/lib/gq.py checksum .   (identifica o código inicial intocado)
+starter_checksum: "sha256:eb1d499eae3cc863f9f2d10becafef1ceba6958d65f919c20ec66573b70471f6"
