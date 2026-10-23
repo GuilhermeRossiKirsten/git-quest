@@ -73,6 +73,17 @@ gq_host_pwd() {
   if [[ "$(gq_os)" == windows ]]; then pwd -W; else pwd; fi
 }
 
+# gq_seccomp_tsan — value for `docker run --security-opt`: Docker's default seccomp
+# profile (moby v28.3.3) plus ONE extra rule, personality(PER_LINUX|ADDR_NO_RANDOMIZE),
+# which `setarch -R` needs so ThreadSanitizer can start on kernels with high
+# vm.mmap_rnd_bits. Docker Desktop runs unconfined by default; this keeps Linux
+# engines (and CI) on the default profile instead of seccomp=unconfined.
+gq_seccomp_tsan() {
+  local dir
+  dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && if [[ "$(gq_os)" == windows ]]; then pwd -W; else pwd; fi)"
+  printf 'seccomp=%s/seccomp-tsan.json' "$dir"
+}
+
 # gq_docker_build <image-tag> <context-dir|-> [dockerfile]
 # Context "-" builds from the Dockerfile alone (toolchain images need no files).
 # Idempotent: Docker's layer cache makes re-runs cheap and the tag is overwritten.
