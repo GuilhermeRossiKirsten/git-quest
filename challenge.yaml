@@ -1,0 +1,40 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-33
+title: "A fila sem trava que travava"
+summary: "Baixa latência em C++20: a fila SPSC sem trava do feed de mercado perde capacidade, vaza objetos, divide linha de cache entre produtor e consumidor e publica dados com memory_order_relaxed; corrija ciclo de vida, capacidade, acquire/release, layout e cache do índice oposto até passar no ThreadSanitizer e no estresse."
+track: cpp
+language: cpp
+standard: cpp20
+toolchain: "gcc:14.2.0"
+difficulty: advanced
+
+learning_objectives:
+  - "Explicar por que memory_order_relaxed não publica dados entre threads e usar o par release/acquire para criar happens-before entre produtor e consumidor"
+  - "Gerenciar o ciclo de vida de elementos em memória crua com construct_at/placement new e destroy_at, sem vazamentos, destruição dupla nem T de reserva"
+  - "Implementar um anel de capacidade arbitrária com máscara de potência de 2 e contadores livres, sem off-by-one entre cheia e vazia"
+  - "Eliminar false sharing separando em linhas de cache os campos escritos por cada thread e verificar o layout de forma determinística"
+  - "Reduzir o true sharing com uma cópia local do índice oposto"
+  - "Validar código lock-free com ThreadSanitizer, AddressSanitizer/LeakSanitizer e estresse com sequência verificada"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src/spsc_queue.h
+
+estimated_minutes: 90
+points: 300
+tags: [cpp20, lock-free, spsc, atomics, memory-order, false-sharing, thread-sanitizer, low-latency]
+prerequisites: [desafio-13, desafio-14]
+next: []
+achievements: ["Acquire, release e nenhuma trava"]
+# Gerado com: python3 scripts/lib/gq.py checksum .   (identifica o código inicial intocado)
+starter_checksum: "sha256:a19cf2428403e9bf1e31dc3645fd8c60df886e23f8b3597d2c460b5df9812639"
