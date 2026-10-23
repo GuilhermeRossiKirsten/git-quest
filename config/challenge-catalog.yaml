@@ -326,14 +326,14 @@ challenges:
     summary: "Compiladores: lexer e parser descendente recursivo com precedência, associatividade, unários e erros com posição."
 
   - id: desafio-32
-    title: "A entrada que virou código"
+    title: "O pacote que derrubava o coletor"
     track: security
     difficulty: advanced
     points: 250
     estimated_minutes: 75
     status: planned
     prerequisites: [desafio-21]
-    summary: "Secure coding em C: estouro de buffer, overflow de inteiros em tamanhos, format string e validação de entrada sob ASan e fuzzing."
+    summary: "Programação defensiva em C: validação de comprimentos, overflow de inteiros em cálculos de tamanho e limites de buffer, verificados com ASan e fuzzing determinístico."
 
   - id: desafio-33
     title: "A fila sem trava que travava"

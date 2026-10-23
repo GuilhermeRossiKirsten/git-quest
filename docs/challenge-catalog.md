@@ -95,7 +95,7 @@ Redes         desafio-22 (framing sobre TCP)
 | `desafio-29` | cpp | Metros mais segundos |
 | `desafio-30` | performance | Dados que não cabiam no cache |
 | `desafio-31` | compilers | A precedência esquecida |
-| `desafio-32` | security | A entrada que virou código |
+| `desafio-32` | security | O pacote que derrubava o coletor |
 | `desafio-33` | cpp | A fila sem trava que travava |
 | `desafio-34` | architecture | A API que quebrava os clientes |
 | `desafio-35` | distributed | Relógios que discordavam |
