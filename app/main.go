@@ -116,7 +116,8 @@ func main() {
 type server struct {
 	warm       atomic.Bool
 	draining   atomic.Bool
-	staleSince atomic.Int64 // UnixNano de quando os preços ficaram desatualizados; 0 = em dia
+	started    time.Time    // leitura monotônica: durações não dependem do relógio de parede
+	staleSince atomic.Int64 // nanossegundos desde started (+1) em que os preços ficaram desatualizados; 0 = em dia
 	prices     atomic.Pointer[map[string]int]
 }
 
@@ -125,11 +126,13 @@ func (s *server) staleFor() time.Duration {
 	if since == 0 {
 		return 0
 	}
-	return time.Since(time.Unix(0, since))
+	// Monotônico: se o relógio do nó for corrigido para trás (WSL2, NTP), a duração
+	// não fica negativa e a readiness não volta a passar sozinha.
+	return time.Since(s.started) - time.Duration(since-1)
 }
 
 func serve() error {
-	s := &server{}
+	s := &server{started: time.Now()}
 	pricing := hasFeature("pricing")
 	log.Printf("iniciando (funcionalidades: %q)", features)
 
@@ -220,7 +223,7 @@ func (s *server) refreshPrices() {
 	for range time.Tick(priceRefreshEvery) {
 		table, err := parsePrices(priceFeed)
 		if err != nil {
-			if s.staleSince.CompareAndSwap(0, time.Now().UnixNano()) {
+			if s.staleSince.CompareAndSwap(0, int64(time.Since(s.started))+1) {
 				log.Printf("ERRO ao recarregar a tabela de preços: %v", err)
 				log.Printf("readiness passa a falhar; /items continua respondendo com os preços antigos por mais %s e depois responde 500", staleGrace)
 			}
