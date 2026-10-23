@@ -1,0 +1,37 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-36
+title: "O pedido que aceitava tudo"
+summary: "Transformar um modelo de pedidos anêmico num agregado DDD: invariantes protegidas pela raiz, Money como value object em centavos, estado encapsulado e eventos de domínio emitidos uma vez e publicados só após o commit."
+track: architecture
+language: go
+difficulty: intermediate
+
+learning_objectives:
+  - "Mover invariantes de negócio espalhadas pelos serviços de aplicação para a raiz do agregado, que passa a ser a única porta de mudança"
+  - "Encapsular o estado em Go (campos não exportados, cópias defensivas) e provar o encapsulamento com testes que não devem compilar"
+  - "Modelar dinheiro como value object imutável em centavos inteiros, com moeda explícita e arredondamento determinístico"
+  - "Calcular subtotal, desconto e total a partir do estado atual em vez de mantê-los em cache"
+  - "Registrar exatamente um evento de domínio por comando aceito e publicá-lo somente depois que a transação foi gravada"
+  - "Verificar invariantes com testes de propriedade de semente fixa contra um modelo de referência"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+
+estimated_minutes: 60
+points: 200
+tags: [architecture, ddd, aggregates, value-objects, domain-events, encapsulation, money, property-testing, go]
+prerequisites: [desafio-34]
+next: []
+achievements: ["Guardião das invariantes"]
+starter_checksum: "sha256:9c0d0d3e4c4e7a6a173a5b43fabdcec15344d72912a5f67c373f11d53bb6ef99"
