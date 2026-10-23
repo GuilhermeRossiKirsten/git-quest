@@ -1,0 +1,38 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-31
+title: "A precedência esquecida"
+summary: "Consertar o interpretador de fórmulas de preço em Go: lexer que recusa 1.5e3 e <=, parser sem precedência nem associatividade corretas, unário acima de ^, tokens sobrando aceitos, posições erradas, recursão sem limite e && / || sem curto-circuito."
+track: compilers
+language: go
+difficulty: intermediate
+
+learning_objectives:
+  - "Escrever um analisador léxico à mão com maior casamento, números com fração e expoente e posições linha:coluna"
+  - "Traduzir uma tabela de precedência e associatividade em descida recursiva ou precedence climbing"
+  - "Posicionar o menos unário em relação à potência e implementar um operador associativo à direita"
+  - "Exigir que o parser consuma a entrada inteira e reportar erros sintáticos com posição exata"
+  - "Limitar a profundidade de recursão para que entradas hostis não estourem a pilha"
+  - "Implementar curto-circuito e erros de avaliação sem pânicos"
+  - "Validar um parser com testes de propriedade (imprimir e reler) e fuzzing determinístico"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+
+estimated_minutes: 60
+points: 200
+tags: [go, compilers, lexer, parser, recursive-descent, precedence-climbing, associativity, error-positions, property-testing, fuzzing]
+prerequisites: []
+next: []
+achievements: ["Mestre da precedência"]
+starter_checksum: "sha256:79b79bc1aac881d2f61ee31666d5f7deae0b826b6ea9ae1cf43c1bf064bc4881"
