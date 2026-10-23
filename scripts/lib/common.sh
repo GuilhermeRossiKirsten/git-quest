@@ -73,6 +73,23 @@ gq_host_pwd() {
   if [[ "$(gq_os)" == windows ]]; then pwd -W; else pwd; fi
 }
 
+# gq_build_guard — make/ninja decide by mtime, but the WSL2 clock and the Docker
+# Desktop VM clock jump by tens of seconds (also backwards), so objects built from
+# an older version of your code can look up to date. Decide by content instead:
+# when any non-ignored file changed since the last run, build/ starts empty.
+# Called by gq_docker_run; a no-op when there is no build/ directory.
+gq_build_guard() {
+  [[ -d build ]] || return 0
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  local now
+  now=$(git ls-files -z -co --exclude-standard | grep -zv '^build/' |
+    xargs -0 -r sha256sum 2>/dev/null | sha256sum | cut -c1-64)
+  if [[ "$(cat build/.gq-inputs 2>/dev/null)" != "$now" ]]; then
+    find build -mindepth 1 -delete 2>/dev/null || true
+    printf '%s\n' "$now" >build/.gq-inputs
+  fi
+}
+
 # gq_seccomp_tsan — value for `docker run --security-opt`: Docker's default seccomp
 # profile (moby v28.3.3) plus ONE extra rule, personality(PER_LINUX|ADDR_NO_RANDOMIZE),
 # which `setarch -R` needs so ThreadSanitizer can start on kernels with high
@@ -131,6 +148,7 @@ gq_docker_run() {
   local -a tty=() extra=()
   [[ -t 1 ]] && tty=(-t)
   if declare -p GQ_DOCKER_EXTRA >/dev/null 2>&1; then extra=("${GQ_DOCKER_EXTRA[@]}"); fi
+  gq_build_guard
   local ref rc=0
   ref=$(mktemp)
   MSYS_NO_PATHCONV=1 docker run --rm "${tty[@]}" --user "$user" "${extra[@]}" \
