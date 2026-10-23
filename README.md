@@ -150,6 +150,9 @@ ele) e `gq-job-twin` (mesmos labels dos pods do job). Leva cerca de 1–2 minuto
       nome DNS; qualquer pod alcança o frontend; nenhum outro fluxo funciona (outro pod →
       api/db, frontend → db, job → db/frontend, api → frontend, db → frontend).
 - [ ] Deny-by-default: um pod novo, sem regras escritas para ele, não recebe nem inicia conexões.
+- [ ] Nas NetworkPolicies aplicadas, a api, o banco e o job não aceitam entrada de outros
+      namespaces nem de IPs arbitrários (`namespaceSelector`, `ipBlock` ou regra sem `from`
+      só no frontend).
 
 ## Dicas
 

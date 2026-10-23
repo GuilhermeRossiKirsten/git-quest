@@ -485,6 +485,61 @@ else
   fail "matriz de conectividade" "não verificada: a loja não subiu"
 fi
 
+# Origens fora do namespace: o avaliador não cria pods em outros namespaces, então
+# este critério lê as políticas APLICADAS no cluster. Uma regra de entrada sem "from"
+# ou com namespaceSelector/ipBlock só é aceitável no frontend (a porta de entrada).
+echo "  origens de outros namespaces (políticas aplicadas):"
+broad=$(k -n "$GQ_NS" get networkpolicy,deployment,cronjob -o json | "$(gq_python)" -c '
+import json, sys
+
+items = json.load(sys.stdin)["items"]
+GUARDED = {("Deployment", "api"), ("Deployment", "db"), ("CronJob", "maintenance")}
+
+def template_labels(obj):
+    spec = obj["spec"]
+    if obj["kind"] == "CronJob":
+        spec = spec["jobTemplate"]["spec"]
+    return spec["template"]["metadata"].get("labels") or {}
+
+def selects(sel, labels):
+    for key, val in (sel.get("matchLabels") or {}).items():
+        if labels.get(key) != val:
+            return False
+    for expr in sel.get("matchExpressions") or []:
+        key, op, vals = expr["key"], expr["operator"], expr.get("values") or []
+        if (op == "In" and labels.get(key) not in vals) \
+                or (op == "NotIn" and key in labels and labels[key] in vals) \
+                or (op == "Exists" and key not in labels) \
+                or (op == "DoesNotExist" and key in labels):
+            return False
+    return True
+
+guarded = {o["metadata"]["name"]: template_labels(o) for o in items
+           if (o["kind"], o["metadata"]["name"]) in GUARDED}
+for pol in items:
+    if pol["kind"] != "NetworkPolicy":
+        continue
+    for rule in pol["spec"].get("ingress") or []:
+        peers = rule.get("from")
+        if not peers:
+            why = "regra de entrada sem \"from\" (qualquer origem, de qualquer namespace)"
+        elif any("namespaceSelector" in p or "ipBlock" in p for p in peers):
+            why = "origem com namespaceSelector/ipBlock"
+        else:
+            continue
+        hit = sorted(n for n, labels in guarded.items()
+                     if selects(pol["spec"].get("podSelector") or {}, labels))
+        if hit:
+            print("%s: %s vale para %s" % (pol["metadata"]["name"], why, ", ".join(hit)))
+')
+if [[ -z "$broad" ]]; then
+  pass "api, banco e job não aceitam conexões de outros namespaces nem de IPs arbitrários"
+else
+  mapfile -t broad_lines <<<"$broad"
+  fail "api, banco e job não aceitam conexões de outros namespaces nem de IPs arbitrários" \
+    "${broad_lines[@]}" "(só o frontend é porta de entrada; use podSelector sem namespaceSelector)"
+fi
+
 k -n "$GQ_NS" delete pod gq-outsider gq-newcomer gq-job-twin --wait=false >/dev/null 2>&1 || true
 k -n "$GQ_NS" delete networkpolicy gq-evaluator-outsider-egress >/dev/null 2>&1 || true
 finish

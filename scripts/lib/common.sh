@@ -73,6 +73,34 @@ gq_host_pwd() {
   if [[ "$(gq_os)" == windows ]]; then pwd -W; else pwd; fi
 }
 
+# gq_build_guard — make/ninja decide by mtime, but the WSL2 clock and the Docker
+# Desktop VM clock jump by tens of seconds (also backwards), so objects built from
+# an older version of your code can look up to date. Decide by content instead:
+# when any non-ignored file changed since the last run, build/ starts empty.
+# Called by gq_docker_run; a no-op when there is no build/ directory.
+gq_build_guard() {
+  [[ -d build ]] || return 0
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  local now
+  now=$(git ls-files -z -co --exclude-standard | grep -zv '^build/' |
+    xargs -0 -r sha256sum 2>/dev/null | sha256sum | cut -c1-64)
+  if [[ "$(cat build/.gq-inputs 2>/dev/null)" != "$now" ]]; then
+    find build -mindepth 1 -delete 2>/dev/null || true
+    printf '%s\n' "$now" >build/.gq-inputs
+  fi
+}
+
+# gq_seccomp_tsan — value for `docker run --security-opt`: Docker's default seccomp
+# profile (moby v28.3.3) plus ONE extra rule, personality(PER_LINUX|ADDR_NO_RANDOMIZE),
+# which `setarch -R` needs so ThreadSanitizer can start on kernels with high
+# vm.mmap_rnd_bits. Docker Desktop runs unconfined by default; this keeps Linux
+# engines (and CI) on the default profile instead of seccomp=unconfined.
+gq_seccomp_tsan() {
+  local dir
+  dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && if [[ "$(gq_os)" == windows ]]; then pwd -W; else pwd; fi)"
+  printf 'seccomp=%s/seccomp-tsan.json' "$dir"
+}
+
 # gq_docker_build <image-tag> <context-dir|-> [dockerfile]
 # Context "-" builds from the Dockerfile alone (toolchain images need no files).
 # Idempotent: Docker's layer cache makes re-runs cheap and the tag is overwritten.
@@ -120,13 +148,22 @@ gq_docker_run() {
   local -a tty=() extra=()
   [[ -t 1 ]] && tty=(-t)
   if declare -p GQ_DOCKER_EXTRA >/dev/null 2>&1; then extra=("${GQ_DOCKER_EXTRA[@]}"); fi
+  gq_build_guard
+  local ref rc=0
+  ref=$(mktemp)
   MSYS_NO_PATHCONV=1 docker run --rm "${tty[@]}" --user "$user" "${extra[@]}" \
     --network "${GQ_DOCKER_NETWORK:-none}" \
     --cpus "${GQ_CPUS:-2}" --memory "${GQ_MEMORY:-2g}" --pids-limit 512 \
     --cap-add SYS_PTRACE \
     -e HOME=/tmp -e NO_COLOR="${NO_COLOR:-}" \
     -v "$(gq_host_pwd)":/work -w /work \
-    "$image" timeout --kill-after=10 "$timeout" "$@"
+    "$image" timeout --kill-after=10 "$timeout" "$@" || rc=$?
+  # The Docker Desktop / WSL2 VM clock can run tens of seconds ahead of the host.
+  # Files the container wrote would then look newer than an edit made right after,
+  # and make/ninja would skip rebuilding it. Restamp them with host time.
+  find . -path ./.git -prune -o -newer "$ref" -print0 2>/dev/null | xargs -0 -r touch -c 2>/dev/null || true
+  rm -f "$ref"
+  return "$rc"
 }
 
 gq_banner_next_steps() {

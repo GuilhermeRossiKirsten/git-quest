@@ -23,6 +23,7 @@ Ao concluir este desafio você será capaz de:
 | 3. Auditoria | a própria matriz usa impersonação (`--as` + grupos `system:serviceaccounts`), como o participante deve fazer |
 | 4. Tokens | `kubectl exec ... /app tokencheck` nos pods em execução do frontend, da api e do banco: o token não pode estar montado; o job, que usa a API, precisa funcionar |
 | 5. Deny-by-default | conexões TCP executadas de dentro dos pods: 3 fluxos permitidos (por nome DNS), 7 proibidos (por IP do Service, para não depender do DNS) e 2 com um pod novo sem regras (entrada e saída negadas); um pod do avaliador com saída liberada isola as regras de entrada |
+| 5. (outros namespaces) | o avaliador não cria pods fora de `desafio-25`, então lê as NetworkPolicies aplicadas: uma regra de entrada sem `from`, ou com `namespaceSelector`/`ipBlock`, que selecione a api, o banco ou o job reprova (só o frontend é porta de entrada) |
 | 5. (DNS) | os fluxos permitidos usam nomes (`api:8080`, `db:5432`); se o DNS estiver bloqueado, o teste diz isso explicitamente |
 | 6. Diagnóstico | as mensagens do avaliador e o `/app connect` distinguem "não resolveu", "sem resposta" e "recusada" |
 | Escopo | antes de aplicar, `kubectl apply --dry-run=client -n desafio-25` lista os objetos: qualquer tipo fora da lista (inclusive cluster-scoped) ou outro namespace faz o avaliador parar sem tocar no cluster |
