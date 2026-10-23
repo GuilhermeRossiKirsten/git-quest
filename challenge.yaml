@@ -1,0 +1,38 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-35
+title: "Relógios que discordavam"
+summary: "Consertar um KV replicado em Go que ordena escritas pelo relógio físico, aplica mensagens fora da ordem causal, soma duplicatas duas vezes e resolve conflitos pela ordem de chegada — corrigindo os relógios de Lamport e vetoriais e verificado numa rede simulada determinística com 500 sementes."
+track: distributed
+language: go
+difficulty: advanced
+
+learning_objectives:
+  - "Explicar por que relógios físicos com desvio não servem para ordenar escritas causalmente relacionadas"
+  - "Implementar o relógio de Lamport, inclusive a regra de recebimento max(local, remoto)+1"
+  - "Comparar relógios vetoriais distinguindo aconteceu-antes de concorrência"
+  - "Implementar entrega causal com relógios vetoriais e um buffer de retenção"
+  - "Tornar a aplicação de mensagens idempotente numa rede que duplica entregas"
+  - "Resolver escritas concorrentes com uma ordem total determinística (Lamport, ID) para garantir convergência"
+  - "Usar testes de propriedade com muitas sementes e reproduzir uma falha a partir da semente"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+
+estimated_minutes: 75
+points: 250
+tags: [go, distributed-systems, replication, lamport-clock, vector-clock, causal-delivery, causal-consistency, eventual-consistency, last-writer-wins, idempotency, clock-skew, property-testing, simulation, race-detector]
+prerequisites: [desafio-22]
+next: []
+achievements: ["Senhor do tempo lógico"]
+starter_checksum: "sha256:2e77f1843fa3afd76427918a7f6311bcc67a17a34840e0f3d81ce2c7468d4604"
