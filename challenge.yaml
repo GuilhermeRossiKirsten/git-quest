@@ -1,0 +1,38 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-32
+title: "O pacote que derrubava o coletor"
+summary: "Programação defensiva em C17: endurecer o parser de pacotes TLV de um coletor de telemetria que cai com pacotes malformados — conferir comprimentos declarados com os bytes restantes, calcular tamanhos sem overflow, copiar textos com limite e terminador, somar sem transbordar e não ignorar retornos de erro — verificado com ASan, UBSan, LSan, fuzzing determinístico e uma build endurecida."
+track: security
+language: c
+difficulty: advanced
+
+learning_objectives:
+  - "Validar todo comprimento declarado na entrada contra os bytes realmente disponíveis antes de ler (SEI CERT C ARR30-C)"
+  - "Calcular tamanhos de alocação em size_t, conferindo limites antes da multiplicação, sem aritmética de 32 bits que dá a volta (INT30-C, MEM35-C)"
+  - "Copiar texto para buffers de tamanho fixo com limite explícito e espaço para o terminador, evitando off-by-one (STR31-C)"
+  - "Escolher tipos largos o bastante para acumular valores e entender que overflow de inteiro com sinal é comportamento indefinido (INT32-C)"
+  - "Verificar todo retorno de erro e liberar o que foi alocado em qualquer caminho de rejeição (EXP12-C, MEM31-C)"
+  - "Usar ASan, UBSan, LSan e fuzzing por mutação para encontrar e reproduzir defeitos de parsing"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src
+
+estimated_minutes: 75
+points: 250
+tags: [c, c17, defensive-programming, input-validation, parsing, tlv, integer-overflow, bounds-checking, asan, ubsan, lsan, fuzzing, fortify-source, cert-c]
+prerequisites: [desafio-21]
+next: []
+achievements: ["Pacote nenhum me derruba"]
+toolchain: "gcc:14.2.0"
+starter_checksum: "sha256:9e7395013fc9f9c0da46171d213bfadb4544822b1285456b784726a6d1fd881d"
