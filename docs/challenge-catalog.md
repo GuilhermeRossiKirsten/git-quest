@@ -12,7 +12,11 @@ C++           desafio-1 ──┬──► desafio-2 ──► desafio-4 ──�
                           │                              ├──► desafio-12 (corrotinas)
                           │                              └──► desafio-13 (jthread)
                           ├──► desafio-3 ────────────────────► desafio-5
-                          └──► desafio-11 (move semantics)
+                          ├──► desafio-11 (move semantics) ──┬──► desafio-26 (pmr/arenas)
+                          │                                   └──► desafio-28 (type erasure)
+                          └──► desafio-27 (CMake)
+              desafio-4 ──► desafio-29 (unidades com templates)
+              desafio-13 + desafio-14 ──► desafio-33 (fila SPSC lock-free)
 Estruturas    desafio-6        desafio-14 ──► desafio-15 ──► desafio-16
 Go            desafio-7 ──► desafio-8 ──► desafio-17
 Docker/K8s    desafio-9 ──► desafio-10 ──┬──► desafio-18 (probes)
@@ -20,7 +24,11 @@ Docker/K8s    desafio-9 ──► desafio-10 ──┬──► desafio-18 (prob
 Banco/Arq.    desafio-9 ──► desafio-20 (outbox e idempotência)
               desafio-23 (índices) ──► desafio-24 (cache Redis)
 Linux         desafio-21 (processos e sinais)
-Redes         desafio-22 (framing sobre TCP)
+Redes         desafio-22 (framing sobre TCP) ──► desafio-35 (relógios lógicos)
+Desempenho    desafio-14 ──► desafio-30 (cache e layout de dados)
+Compiladores  desafio-31 (lexer e parser)
+Segurança     desafio-21 ──► desafio-32 (parsing defensivo em C)
+Arquitetura   desafio-17 ──► desafio-34 (design de APIs) ──► desafio-36 (DDD)
 ```
 
 ## Disponíveis
@@ -37,6 +45,11 @@ Redes         desafio-22 (framing sobre TCP)
 | `desafio-13` | C++20 | jthread e stop tokens | `std::jthread`, `std::stop_token`, `condition_variable_any`, encerramento cooperativo, ThreadSanitizer |
 | `desafio-5` | C++23 | Erros que não se escondem | `std::expected` e operações monádicas, adaptadores de ranges, `std::print`/`std::format` |
 | `desafio-12` | C++23 | Corrotinas que geram | `std::generator`, avaliação preguiçosa, RAII em corrotinas, `std::ranges::elements_of` |
+| `desafio-26` | C++20 | A arena que não devolvia | `std::pmr::memory_resource`, arenas com alinhamento (`alignas(64)`), destrutores na arena, `do_is_equal`, propagação para elementos aninhados |
+| `desafio-27` | CMake | Só compila na minha máquina | CMake moderno: targets e requisitos de uso `PUBLIC`/`PRIVATE`/`INTERFACE`, builds fora da árvore, install/export, `find_package(CONFIG)`, `BUILD_SHARED_LIBS` |
+| `desafio-28` | C++20 | O switch que crescia | Type Erasure no lugar de `enum` + `switch`, fatiamento, concepts como contrato, semântica de valor, aberto/fechado |
+| `desafio-29` | C++20 | Metros mais segundos | metaprogramação com NTTP, dimensões no tipo, `explicit`, abstração de custo zero, literais definidos pelo usuário |
+| `desafio-33` | C++20 | A fila sem trava que travava | fila SPSC lock-free, `release`/`acquire`, memória crua com `construct_at`, false sharing, ThreadSanitizer |
 
 ### Trilha Estruturas de Dados e Algoritmos
 
@@ -85,27 +98,42 @@ Redes         desafio-22 (framing sobre TCP)
 |---|---|---|
 | `desafio-22` | Mensagens pela metade | framing length-prefix sobre TCP, leituras parciais (`io.ReadFull`), limite de frame, deadlines por operação, backpressure, encerramento sem vazar goroutines |
 
-## Roteiro (em construção)
+### Trilha Desempenho
 
-| Desafio | Trilha | Título |
+| Desafio | Título | Você vai aprender |
 |---|---|---|
-| `desafio-26` | cpp | A arena que não devolvia |
-| `desafio-27` | cpp | Só compila na minha máquina |
-| `desafio-28` | cpp | O switch que crescia |
-| `desafio-29` | cpp | Metros mais segundos |
-| `desafio-30` | performance | Dados que não cabiam no cache |
-| `desafio-31` | compilers | A precedência esquecida |
-| `desafio-32` | security | O pacote que derrubava o coletor |
-| `desafio-33` | cpp | A fila sem trava que travava |
-| `desafio-34` | architecture | A API que quebrava os clientes |
-| `desafio-35` | distributed | Relógios que discordavam |
-| `desafio-36` | architecture | O pedido que aceitava tudo |
+| `desafio-30` | Dados que não cabiam no cache | localidade de cache medida com cachegrind, AoS × SoA, dados quentes e frios, indireção por ponteiro, ordem de percurso, vetor ordenado × `std::map` |
+
+### Trilha Compiladores
+
+| Desafio | Título | Você vai aprender |
+|---|---|---|
+| `desafio-31` | A precedência esquecida | lexer à mão, descida recursiva/precedence climbing, associatividade, menos unário × potência, erros com posição, limite de profundidade, fuzzing (Go) |
+
+### Trilha Segurança
+
+| Desafio | Título | Você vai aprender |
+|---|---|---|
+| `desafio-32` | O pacote que derrubava o coletor | programação defensiva em C17: comprimentos declarados × bytes disponíveis, overflow em cálculos de tamanho, cópias limitadas, caminhos de erro sem vazamento, SEI CERT C, ASan/UBSan e fuzzing |
+
+### Trilha Sistemas Distribuídos
+
+| Desafio | Título | Você vai aprender |
+|---|---|---|
+| `desafio-35` | Relógios que discordavam | relógios de Lamport e vetoriais, entrega causal, idempotência sob duplicação, convergência com ordem total determinística, simulação com sementes (Go) |
+
+### Trilha Arquitetura
+
+| Desafio | Título | Você vai aprender |
+|---|---|---|
+| `desafio-34` | A API que quebrava os clientes | evolução compatível, paginação por cursor, ETag/`If-Match` contra lost updates, `Idempotency-Key`, Problem Details (RFC 9457), GET condicional (Go) |
+| `desafio-36` | O pedido que aceitava tudo | DDD: agregados que protegem invariantes, encapsulamento em Go, dinheiro como value object, eventos de domínio publicados após gravar |
 
 ## Áreas ainda sem desafios
 
 Candidatas:
 
-Mensageria (Kafka/RabbitMQ), DDD e Clean Architecture, isolamento de transações e
-deadlocks, Helm/Kustomize/HPA, profiling e benchmarks em Go, CMake e linking, e C++26
+Mensageria (Kafka/RabbitMQ), Clean Architecture/hexagonal, consenso (Raft), isolamento de transações e
+deadlocks, Helm/Kustomize/HPA, profiling e benchmarks em Go, linking e ABI, e C++26
 (reflection e contracts quando houver suporte real em compiladores). Veja
 [contributing-challenges.md](contributing-challenges.md) para propor um.

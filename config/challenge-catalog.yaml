@@ -264,14 +264,14 @@ challenges:
     prerequisites: [desafio-19]
     summary: "Kubernetes: RBAC de menor privilégio e NetworkPolicy deny-by-default."
 
-  # --- Quarta leva (planejados até a branch existir) ------------------------
+  # --- Quarta leva (baseada nos livros de Livros/) ---------------------------
   - id: desafio-26
     title: "A arena que não devolvia"
     track: cpp
     difficulty: advanced
     points: 250
     estimated_minutes: 75
-    status: planned
+    status: available
     prerequisites: [desafio-11]
     summary: "C++17/20: std::pmr, memory resources, alinhamento e arenas num parser que aloca demais."
 
@@ -281,7 +281,7 @@ challenges:
     difficulty: intermediate
     points: 200
     estimated_minutes: 60
-    status: planned
+    status: available
     prerequisites: [desafio-1]
     summary: "CMake moderno: targets, PUBLIC/PRIVATE/INTERFACE, install/export e find_package num projeto que só compila no diretório do autor."
 
@@ -291,7 +291,7 @@ challenges:
     difficulty: intermediate
     points: 200
     estimated_minutes: 60
-    status: planned
+    status: available
     prerequisites: [desafio-11]
     summary: "C++ Software Design: trocar um switch por tipo que cresce a cada feature por type erasure/strategy, sem slicing e sem quebrar o comportamento."
 
@@ -301,7 +301,7 @@ challenges:
     difficulty: advanced
     points: 250
     estimated_minutes: 75
-    status: planned
+    status: available
     prerequisites: [desafio-4]
     summary: "Template metaprogramming: sistema de unidades em tempo de compilação em que somar metros com segundos não compila."
 
@@ -311,7 +311,7 @@ challenges:
     difficulty: advanced
     points: 250
     estimated_minutes: 75
-    status: planned
+    status: available
     prerequisites: [desafio-14]
     summary: "Desempenho: localidade de cache, AoS x SoA e padrões de acesso medidos de forma determinística com cachegrind."
 
@@ -321,7 +321,7 @@ challenges:
     difficulty: intermediate
     points: 200
     estimated_minutes: 60
-    status: planned
+    status: available
     prerequisites: []
     summary: "Compiladores: lexer e parser descendente recursivo com precedência, associatividade, unários e erros com posição."
 
@@ -331,7 +331,7 @@ challenges:
     difficulty: advanced
     points: 250
     estimated_minutes: 75
-    status: planned
+    status: available
     prerequisites: [desafio-21]
     summary: "Programação defensiva em C: validação de comprimentos, overflow de inteiros em cálculos de tamanho e limites de buffer, verificados com ASan e fuzzing determinístico."
 
@@ -341,7 +341,7 @@ challenges:
     difficulty: advanced
     points: 300
     estimated_minutes: 90
-    status: planned
+    status: available
     prerequisites: [desafio-13, desafio-14]
     summary: "Baixa latência: fila SPSC lock-free com memory orders corretos, sem false sharing, validada com TSan e estresse."
 
@@ -351,7 +351,7 @@ challenges:
     difficulty: intermediate
     points: 200
     estimated_minutes: 60
-    status: planned
+    status: available
     prerequisites: [desafio-17]
     summary: "Design de APIs: paginação, ETag e If-Match contra lost updates, Idempotency-Key, erros problem+json e compatibilidade com clientes antigos."
 
@@ -361,7 +361,7 @@ challenges:
     difficulty: advanced
     points: 250
     estimated_minutes: 75
-    status: planned
+    status: available
     prerequisites: [desafio-22]
     summary: "Sistemas distribuídos: relógios de Lamport e vetoriais, ordem causal e convergência num KV replicado com rede simulada."
 
@@ -371,6 +371,6 @@ challenges:
     difficulty: intermediate
     points: 200
     estimated_minutes: 60
-    status: planned
+    status: available
     prerequisites: [desafio-34]
     summary: "DDD: agregados que protegem invariantes, value objects e eventos de domínio num modelo anêmico."

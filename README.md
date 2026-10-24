@@ -13,7 +13,7 @@ main ─────────── catálogo, documentação, CLI, validador
 desafio-1 ────── C++11 · O vazamento silencioso
 desafio-2 ────── C++14 · Lambdas sem fronteiras
 ...
-desafio-25 ───── Kubernetes · Quem pode o quê
+desafio-36 ───── Arquitetura (Go) · O pedido que aceitava tudo
 ```
 
 ## Começo rápido
@@ -69,6 +69,17 @@ veja [docs/getting-started.md](docs/getting-started.md).
 | `desafio-23` | Banco de dados (SQL) | intermediário | índices, `EXPLAIN`, paginação por keyset |
 | `desafio-24` | Banco de dados (Go) | avançado | cache-aside em Redis, stampede, TTL com jitter |
 | `desafio-25` | Kubernetes | avançado | RBAC de menor privilégio, NetworkPolicy |
+| `desafio-26` | C++20 | avançado | `std::pmr`, arenas, alinhamento |
+| `desafio-27` | CMake | intermediário | targets, requisitos de uso, install/export |
+| `desafio-28` | C++20 | intermediário | type erasure no lugar de `switch` por tipo |
+| `desafio-29` | C++20 | avançado | unidades físicas em tempo de compilação |
+| `desafio-30` | Desempenho (C++20) | avançado | localidade de cache, AoS × SoA, cachegrind |
+| `desafio-31` | Compiladores (Go) | intermediário | lexer, parser descendente, precedência |
+| `desafio-32` | Segurança (C17) | avançado | parsing defensivo, overflow em tamanhos, fuzzing |
+| `desafio-33` | C++20 | avançado | fila SPSC lock-free, memory orders, false sharing |
+| `desafio-34` | Arquitetura (Go) | intermediário | paginação, ETag/`If-Match`, idempotência |
+| `desafio-35` | Distribuídos (Go) | avançado | relógios de Lamport e vetoriais, entrega causal |
+| `desafio-36` | Arquitetura (Go) | intermediário | DDD: agregados, value objects, eventos |
 
 Catálogo completo, trilhas e roteiro: [docs/challenge-catalog.md](docs/challenge-catalog.md).
 Os desafios não exigem ordem linear; os pré-requisitos são explícitos.
