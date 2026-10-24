@@ -1,0 +1,47 @@
+# Contrato do desafio — formato documentado em docs/challenge-format.md (branch main).
+id: desafio-26
+title: "A arena que não devolvia"
+summary: "C++17/20: std::pmr, memory resources, alinhamento e arenas num indexador de logs que tentou parar de alocar e passou a corromper memória."
+track: cpp
+language: cpp
+standard: cpp20
+toolchain: "gcc:14.2.0"
+difficulty: advanced
+
+learning_objectives:
+  - "Escrever uma arena sequencial que respeita alinhamento, inclusive de tipos superalinhados (alignas(64))"
+  - "Separar memória crua de tempo de vida de objetos: registrar e chamar destrutores de objetos colocados na arena"
+  - "Implementar um std::pmr::memory_resource com do_is_equal correto e entender o que a igualdade de allocators autoriza"
+  - "Propagar o memory_resource para elementos aninhados (pmr::string dentro de pmr::vector e pmr::map) e evitar temporários no heap global"
+  - "Decidir em qual resource cada resultado deve viver para não devolver ponteiros para um rascunho liberado"
+  - "Medir alocações no heap global e diagnosticar erros de memória com ASan, UBSan e LSan"
+
+environment:
+  type: docker
+  requires: [docker]
+  start_command: "./start.sh"
+  test_command: "./test.sh"
+
+validation:
+  type: automated
+  timeout_seconds: 300
+
+# Arquivos/pastas que o participante pode alterar. Todo o resto é do avaliador.
+editable:
+  - src/arena.h
+  - src/arena.cpp
+  - src/arena_resource.h
+  - src/arena_resource.cpp
+  - src/log_index.h
+  - src/log_index.cpp
+  - src/log_line.h
+  - src/log_line.cpp
+
+estimated_minutes: 75
+points: 250
+tags: [cpp17, cpp20, pmr, memory-resource, arena, allocators, alignment, sanitizers]
+prerequisites: [desafio-11]
+next: [desafio-33]
+achievements: ["Senhor da arena"]
+# Gerado com: python3 scripts/lib/gq.py checksum .   (identifica o código inicial intocado)
+starter_checksum: "sha256:418972d14ae161e907806c2fef3dfcfca5734c60c699cee1338bb668ea4e6d53"
